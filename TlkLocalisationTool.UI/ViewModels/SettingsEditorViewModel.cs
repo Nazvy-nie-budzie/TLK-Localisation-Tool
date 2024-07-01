@@ -81,13 +81,13 @@ public class SettingsEditorViewModel : ViewModelBase
         }
     }
 
-    public Command SelectLocalisedTlkFilePathCommand => _selectLocalisedTlkFilePathCommand ??= new Command(async x => LocalisedTlkFilePath = await SelectTlkFilePath(LocalisedTlkFilePath));
+    public Command SelectLocalisedTlkFilePathCommand => _selectLocalisedTlkFilePathCommand ??= new Command(async _ => LocalisedTlkFilePath = await SelectTlkFilePath(LocalisedTlkFilePath));
 
-    public Command SelectOriginalTlkFilePathCommand => _selectOriginalTlkFilePathCommand ??= new Command(async x => OriginalTlkFilePath = await SelectTlkFilePath(OriginalTlkFilePath));
+    public Command SelectOriginalTlkFilePathCommand => _selectOriginalTlkFilePathCommand ??= new Command(async _ => OriginalTlkFilePath = await SelectTlkFilePath(OriginalTlkFilePath));
 
-    public Command SelectExtractedGameFilesPathCommand => _selectExtractedGameFilesPathCommand ??= new Command(x => ExtractedGameFilesPath = SelectFolderPath(ExtractedGameFilesPath));
+    public Command SelectExtractedGameFilesPathCommand => _selectExtractedGameFilesPathCommand ??= new Command(_ => ExtractedGameFilesPath = SelectFolderPath(ExtractedGameFilesPath));
 
-    public Command SaveCommand => _saveCommand ??= new Command(async x => await SaveAppSettings(), x => !string.IsNullOrWhiteSpace(LocalisedTlkFilePath) && !string.IsNullOrWhiteSpace(OriginalTlkFilePath));
+    public Command SaveCommand => _saveCommand ??= new Command(async _ => await SaveAppSettings(), _ => !string.IsNullOrWhiteSpace(LocalisedTlkFilePath) && !string.IsNullOrWhiteSpace(OriginalTlkFilePath));
 
     public override Task Init()
     {
@@ -105,6 +105,7 @@ public class SettingsEditorViewModel : ViewModelBase
 
         _openFolderDialog = new OpenFolderDialog
         {
+            AddToRecent = false,
             DereferenceLinks = true,
             ValidateNames = true,
         };
@@ -134,8 +135,8 @@ public class SettingsEditorViewModel : ViewModelBase
     private async Task<string> SelectTlkFilePath(string currentFilePath)
     {
         _openFileDialog.InitialDirectory = string.IsNullOrWhiteSpace(currentFilePath) ? Environment.CurrentDirectory : Path.GetDirectoryName(currentFilePath);        
-        var dialogResult = _openFileDialog.ShowDialog();
-        if (dialogResult != true)
+        var isFileSelected = _openFileDialog.ShowDialog();
+        if (isFileSelected != true)
         {
             return currentFilePath;
         }
@@ -153,8 +154,8 @@ public class SettingsEditorViewModel : ViewModelBase
     private string SelectFolderPath(string currentPath)
     {
         _openFolderDialog.InitialDirectory = string.IsNullOrWhiteSpace(currentPath) ? Environment.CurrentDirectory : currentPath;
-        var dialogResult = _openFolderDialog.ShowDialog();
-        if (dialogResult != true)
+        var isFolderSelected = _openFolderDialog.ShowDialog();
+        if (isFolderSelected != true)
         {
             return currentPath;
         }

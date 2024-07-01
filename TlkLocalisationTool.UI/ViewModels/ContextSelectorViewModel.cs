@@ -23,7 +23,7 @@ public class ContextSelectorViewModel : ViewModelBase
 
     public FilePathModel SelectedFilePath { get; set; }
 
-    public Command ShowContextCommand => _showContextCommand ??= new Command(x => ShowContext(), x => SelectedFilePath?.IsContextAvailable == true);
+    public Command ShowContextCommand => _showContextCommand ??= new Command(_ => ShowContext(), _ => SelectedFilePath?.IsContextAvailable == true);
 
     public void SetParameters(ContextSelectorParameters parameters)
     {

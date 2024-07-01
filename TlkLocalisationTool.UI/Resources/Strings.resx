@@ -171,6 +171,9 @@
   <data name="TdaViewer_Title" xml:space="preserve">
     <value>2DA Viewer - {0}</value>
   </data>
+  <data name="TlkViewer_EntriesWereExportedMessage" xml:space="preserve">
+    <value>Entries were exported.</value>
+  </data>
   <data name="TlkViewer_LookupFileIsNotGeneratedMessage" xml:space="preserve">
     <value>Lookup file is not yet generated. Do you want to generate it now?
 NOTE: it might take couple of minutes.</value>

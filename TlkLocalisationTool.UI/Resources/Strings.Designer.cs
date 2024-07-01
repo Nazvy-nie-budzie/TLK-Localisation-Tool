@@ -223,6 +223,15 @@ namespace TlkLocalisationTool.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Entries were exported..
+        /// </summary>
+        internal static string TlkViewer_EntriesWereExportedMessage {
+            get {
+                return ResourceManager.GetString("TlkViewer_EntriesWereExportedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Lookup file is not yet generated. Do you want to generate it now?
         ///NOTE: it might take couple of minutes..
         /// </summary>

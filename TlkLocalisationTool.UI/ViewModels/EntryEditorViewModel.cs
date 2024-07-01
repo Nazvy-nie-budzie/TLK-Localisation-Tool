@@ -17,7 +17,7 @@ public class EntryEditorViewModel : ViewModelBase
 
     public string LocalisedValue { get; set; }
 
-    public Command SaveCommand => _saveCommand ??= new Command(x => SaveChanges());
+    public Command SaveCommand => _saveCommand ??= new Command(_ => SaveChanges());
 
     public void SetParameters(EntryEditorParameters parameters)
     {
