@@ -4,8 +4,14 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <NoWarn>IDE0290;IDE0305</NoWarn>
     <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(PublishProtocol)' != ''">
+    <AssemblyName>TLK Localisation Tool</AssemblyName>
+    <Version>0.1</Version>
+    <AssemblyTitle>Tool that helps with SW KOTOR localisation</AssemblyTitle>
   </PropertyGroup>
 
   <ItemGroup>
