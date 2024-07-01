@@ -1,0 +1,12 @@
+﻿<Project>
+  
+  <PropertyGroup>
+    <NoWarn>IDE0290;IDE0305</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>None</DebugType>
+    <DebugSymbols>False</DebugSymbols>
+  </PropertyGroup>
+  
+</Project>
