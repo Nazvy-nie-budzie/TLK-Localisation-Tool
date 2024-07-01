@@ -63,11 +63,11 @@ public class TlkViewerViewModel : ViewModelBase
 
     public Command ExportLocalisedCommand => _exportLocalisedCommand ??= new Command(
         async _ => await ExportEntries(_unfilteredEntries.Select(x => x.Value).ToArray()),
-        _ => _unfilteredEntries.Length != 0);
+        _ => _unfilteredEntries != null);
 
-    public Command ExportOriginalCommand => _exportOriginalCommand ??= new Command(async _ => await ExportEntries(_originalEntries), _ => _unfilteredEntries.Length != 0);
+    public Command ExportOriginalCommand => _exportOriginalCommand ??= new Command(async _ => await ExportEntries(_originalEntries), _ => _unfilteredEntries != null);
 
-    public Command SaveCommand => _saveCommand ??= new Command(async _ => await SaveLocalisedFile(), _ => _unfilteredEntries.Length != 0);
+    public Command SaveCommand => _saveCommand ??= new Command(async _ => await SaveLocalisedFile(), _ => _unfilteredEntries != null);
 
     public override async Task Init()
     {
