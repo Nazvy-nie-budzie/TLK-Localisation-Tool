@@ -9,6 +9,7 @@ using System.Windows;
 using TlkLocalisationTool.Logic.Services.Interfaces;
 using TlkLocalisationTool.Shared.Settings;
 using TlkLocalisationTool.UI.Constants;
+using TlkLocalisationTool.UI.Extensions;
 using TlkLocalisationTool.UI.Models;
 using TlkLocalisationTool.UI.Parameters;
 using TlkLocalisationTool.UI.Resources;
@@ -74,7 +75,7 @@ public class TlkViewerViewModel : ViewModelBase
         Title = Strings.TlkViewer_Title;
 
         var isEncodingNameValid = DataConstants.AvailableEncodingNames.Contains(_appSettings.EncodingName);
-        if (!isEncodingNameValid || !AreFilePathsSet())
+        if (!isEncodingNameValid || !_appSettings.LanguageCode.IsValidLanguageCode() || !AreFilePathsSet())
         {
             var areFilePathsSet = ShowSettingsEditor();
             if (!areFilePathsSet)
@@ -132,7 +133,14 @@ public class TlkViewerViewModel : ViewModelBase
 
     private void ShowEntryEditor()
     {
-        var parameters = new EntryEditorParameters { StrRef = SelectedEntry.StrRef, OriginalValue = _originalEntries[SelectedEntry.StrRef], LocalisedValue = SelectedEntry.Value };
+        var parameters = new EntryEditorParameters
+        {
+            StrRef = SelectedEntry.StrRef,
+            OriginalValue = _originalEntries[SelectedEntry.StrRef],
+            LocalisedValue = SelectedEntry.Value,
+            LanguageCode = _appSettings.LanguageCode,
+        };
+
         var entryEditorViewModel = ServiceProviderContainer.GetRequiredService<EntryEditorViewModel>();
         entryEditorViewModel.SetParameters(parameters);
         Dialog.ShowDialog(entryEditorViewModel, this);

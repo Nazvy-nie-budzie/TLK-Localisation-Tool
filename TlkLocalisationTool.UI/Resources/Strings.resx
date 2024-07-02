@@ -156,8 +156,14 @@
   <data name="InformationMessage_Title" xml:space="preserve">
     <value>Message</value>
   </data>
-  <data name="SettingsEditor_InvalidEncodingNameMessage" xml:space="preserve">
+  <data name="SettingsEditor_InvalidEncodingNameWasReplacedMessage" xml:space="preserve">
     <value>Encoding was invalid. Default encoding was selected instead.</value>
+  </data>
+  <data name="SettingsEditor_InvalidLanguageCodeMessage" xml:space="preserve">
+    <value>Language code is invalid. Either clear it, or set it to valid one.</value>
+  </data>
+  <data name="SettingsEditor_InvalidLanguageCodeWasClearedMessage" xml:space="preserve">
+    <value>Language code was invalid, so it was cleared.</value>
   </data>
   <data name="SettingsEditor_SelectedFileIsNotTlkMessage" xml:space="preserve">
     <value>Selected file is not a TLK file</value>

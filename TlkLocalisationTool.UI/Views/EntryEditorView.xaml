@@ -20,7 +20,7 @@
         <Label Grid.Row="0" Content="Original"/>
         <TextBox Grid.Row="1" Text="{Binding OriginalValue}" IsReadOnly="True"/>
         <Label Grid.Row="2" Content="Localised"/>
-        <TextBox Grid.Row="3" Text="{Binding LocalisedValue}" SpellCheck.IsEnabled="True"/>
+        <TextBox Grid.Row="3" Text="{Binding LocalisedValue}" Language="{Binding Language}" SpellCheck.IsEnabled="True"/>
         <Button Grid.Row="4" Content="Save" Command="{Binding SaveCommand}"/>
     </Grid>
 </views:ViewBase>

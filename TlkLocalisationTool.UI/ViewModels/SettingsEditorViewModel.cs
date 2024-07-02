@@ -8,6 +8,7 @@ using System.Windows;
 using TlkLocalisationTool.Logic.Services.Interfaces;
 using TlkLocalisationTool.Shared.Settings;
 using TlkLocalisationTool.UI.Constants;
+using TlkLocalisationTool.UI.Extensions;
 using TlkLocalisationTool.UI.Resources;
 using TlkLocalisationTool.UI.Utils;
 
@@ -25,6 +26,7 @@ public class SettingsEditorViewModel : ViewModelBase
     private string _localisedTlkFilePath;
     private string _originalTlkFilePath;
     private string _extractedGameFilesPath;
+    private string _languageCode;
     private string _selectedEncodingName;
 
     private Command _selectLocalisedTlkFilePathCommand;
@@ -65,6 +67,16 @@ public class SettingsEditorViewModel : ViewModelBase
         set
         {
             _extractedGameFilesPath = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string LanguageCode
+    {
+        get => _languageCode;
+        set
+        {
+            _languageCode = value;
             OnPropertyChanged();
         }
     }
@@ -113,21 +125,9 @@ public class SettingsEditorViewModel : ViewModelBase
         LocalisedTlkFilePath = _appSettings.LocalisedTlkFilePath;
         OriginalTlkFilePath = _appSettings.OriginalTlkFilePath;
         ExtractedGameFilesPath = _appSettings.ExtractedGameFilesPath;
+        SetLanguageCode();
         Array.ForEach(DataConstants.AvailableEncodingNames, EncodingNames.Add);
-
-        var isSelectedEncodingValid = DataConstants.AvailableEncodingNames.Contains(_appSettings.EncodingName);
-        if (!isSelectedEncodingValid)
-        {
-            SelectedEncodingName = DataConstants.AvailableEncodingNames[0];
-            if (!string.IsNullOrEmpty(_appSettings.EncodingName))
-            {
-                MessageBox.Show(Strings.SettingsEditor_InvalidEncodingNameMessage, Strings.ErrorMessage_Title);
-            }
-        }
-        else
-        {
-            SelectedEncodingName = _appSettings.EncodingName;
-        }
+        SetSelectedEncodingName();
 
         return Task.CompletedTask;
     }
@@ -163,11 +163,45 @@ public class SettingsEditorViewModel : ViewModelBase
         return _openFolderDialog.FolderName;
     }
 
+    private void SetLanguageCode()
+    {
+        if (!_appSettings.LanguageCode.IsValidLanguageCode())
+        {
+            MessageBox.Show(Strings.SettingsEditor_InvalidLanguageCodeWasClearedMessage, Strings.ErrorMessage_Title);
+            _appSettings.LanguageCode = string.Empty;
+        }
+
+        LanguageCode = _appSettings.LanguageCode;
+    }
+
+    private void SetSelectedEncodingName()
+    {
+        var isSelectedEncodingValid = DataConstants.AvailableEncodingNames.Contains(_appSettings.EncodingName);
+        if (!isSelectedEncodingValid)
+        {
+            if (!string.IsNullOrEmpty(_appSettings.EncodingName))
+            {
+                MessageBox.Show(Strings.SettingsEditor_InvalidEncodingNameWasReplacedMessage, Strings.ErrorMessage_Title);
+            }
+
+            _appSettings.EncodingName = DataConstants.AvailableEncodingNames[0];
+        }
+
+        SelectedEncodingName = _appSettings.EncodingName;
+    }
+
     private async Task SaveAppSettings()
     {
+        if (!LanguageCode.IsValidLanguageCode())
+        {
+            MessageBox.Show(Strings.SettingsEditor_InvalidLanguageCodeMessage, Strings.ErrorMessage_Title);
+            return;
+        }
+
         _appSettings.LocalisedTlkFilePath = LocalisedTlkFilePath;
         _appSettings.OriginalTlkFilePath = OriginalTlkFilePath;
         _appSettings.ExtractedGameFilesPath = ExtractedGameFilesPath;
+        _appSettings.LanguageCode = LanguageCode;
         _appSettings.EncodingName = SelectedEncodingName;
         await _jsonWriter.Write(_appSettings, DataConstants.AppSettingsFileName);
         Close();

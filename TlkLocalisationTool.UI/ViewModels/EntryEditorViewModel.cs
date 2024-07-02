@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Windows.Markup;
 using TlkLocalisationTool.UI.Parameters;
 using TlkLocalisationTool.UI.Resources;
 using TlkLocalisationTool.UI.Utils;
@@ -17,6 +18,8 @@ public class EntryEditorViewModel : ViewModelBase
 
     public string LocalisedValue { get; set; }
 
+    public XmlLanguage Language { get; set; }
+
     public Command SaveCommand => _saveCommand ??= new Command(_ => SaveChanges());
 
     public void SetParameters(EntryEditorParameters parameters)
@@ -24,6 +27,7 @@ public class EntryEditorViewModel : ViewModelBase
         _strRef = parameters.StrRef;
         OriginalValue = parameters.OriginalValue;
         LocalisedValue = parameters.LocalisedValue;
+        Language = XmlLanguage.GetLanguage(parameters.LanguageCode);
     }
 
     public override Task Init()

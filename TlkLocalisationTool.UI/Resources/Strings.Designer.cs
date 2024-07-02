@@ -180,9 +180,27 @@ namespace TlkLocalisationTool.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Encoding was invalid. Default encoding was selected instead..
         /// </summary>
-        internal static string SettingsEditor_InvalidEncodingNameMessage {
+        internal static string SettingsEditor_InvalidEncodingNameWasReplacedMessage {
             get {
-                return ResourceManager.GetString("SettingsEditor_InvalidEncodingNameMessage", resourceCulture);
+                return ResourceManager.GetString("SettingsEditor_InvalidEncodingNameWasReplacedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language code is invalid. Either clear it, or set it to valid one..
+        /// </summary>
+        internal static string SettingsEditor_InvalidLanguageCodeMessage {
+            get {
+                return ResourceManager.GetString("SettingsEditor_InvalidLanguageCodeMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language code was invalid, so it was cleared..
+        /// </summary>
+        internal static string SettingsEditor_InvalidLanguageCodeWasClearedMessage {
+            get {
+                return ResourceManager.GetString("SettingsEditor_InvalidLanguageCodeWasClearedMessage", resourceCulture);
             }
         }
         

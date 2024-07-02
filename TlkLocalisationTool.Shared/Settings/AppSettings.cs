@@ -8,5 +8,7 @@ public class AppSettings
 
     public string ExtractedGameFilesPath { get; set; }
 
+    public string LanguageCode { get; set; }
+
     public string EncodingName { get; set; }
 }
