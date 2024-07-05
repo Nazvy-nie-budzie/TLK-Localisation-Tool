@@ -1,7 +1,7 @@
 ﻿<Project>
   
   <PropertyGroup>
-    <NoWarn>IDE0290;IDE0305</NoWarn>
+    <NoWarn>IDE0290;IDE0305;SYSLIB1045</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">

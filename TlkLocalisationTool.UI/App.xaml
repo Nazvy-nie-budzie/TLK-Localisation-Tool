@@ -4,7 +4,14 @@
              xmlns:converters="clr-namespace:TlkLocalisationTool.UI.Converters"
              Startup="OnStartup">
     <Application.Resources>
-        <converters:BoolReverseConverter x:Key="BoolReverseConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources\Styles.xaml"/>
+                <ResourceDictionary>
+                    <converters:BoolReverseConverter x:Key="BoolReverseConverter"/>
+                    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

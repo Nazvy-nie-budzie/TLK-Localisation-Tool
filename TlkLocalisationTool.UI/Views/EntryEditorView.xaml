@@ -3,7 +3,7 @@
                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                xmlns:system="clr-namespace:System;assembly=System"
+                xmlns:controls="clr-namespace:TlkLocalisationTool.UI.Controls"
                 xmlns:views="clr-namespace:TlkLocalisationTool.UI.Views"
                 mc:Ignorable="d"
                 Title="{Binding Title}"
@@ -18,9 +18,9 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Content="Original"/>
-        <TextBox Grid.Row="1" Text="{Binding OriginalValue}" IsReadOnly="True"/>
+        <TextBox Grid.Row="1" Text="{Binding OriginalValue, Mode=OneWay}" IsReadOnly="True"/>
         <Label Grid.Row="2" Content="Localised"/>
-        <TextBox Grid.Row="3" Text="{Binding LocalisedValue}" SpellCheck.IsEnabled="True"/>
+        <controls:SpellCheckTextBox Grid.Row="3" Text="{Binding LocalisedValue}" Language="{Binding Language}" SpellCheckDictionaries="{Binding SpellCheckFileUris}"/>
         <Button Grid.Row="4" Content="Save" Command="{Binding SaveCommand}"/>
     </Grid>
 </views:ViewBase>

@@ -1,0 +1,8 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:TlkLocalisationTool.UI.Controls">
+    <Style TargetType="{x:Type controls:SpellCheckTextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="SpellCheck.IsEnabled" Value="True"/>
+        <Setter Property="AcceptsReturn" Value="True"/>
+    </Style>
+</ResourceDictionary>

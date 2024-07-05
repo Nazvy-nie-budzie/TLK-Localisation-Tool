@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -8,6 +9,7 @@ using System.Windows;
 using TlkLocalisationTool.Logic.Services.Interfaces;
 using TlkLocalisationTool.Shared.Settings;
 using TlkLocalisationTool.UI.Constants;
+using TlkLocalisationTool.UI.Extensions;
 using TlkLocalisationTool.UI.Models;
 using TlkLocalisationTool.UI.Parameters;
 using TlkLocalisationTool.UI.Resources;
@@ -22,47 +24,58 @@ public class TlkViewerViewModel : ViewModelBase
     private readonly ITlkWriter _tlkWriter;
     private readonly ILookupService _lookupService;
     private readonly IJsonReader _jsonReader;
+    private readonly IJsonWriter _jsonWriter;
 
     private TlkEntryModel[] _unfilteredEntries;
     private string[] _originalEntries;
+    private SaveFileDialog _saveFileDialog;
 
     private Command _filterCommand;
     private Command _editCommand;
     private Command _selectContextCommand;
     private Command _settingsCommand;
+    private Command _exportLocalisedCommand;
+    private Command _exportOriginalCommand;
     private Command _saveCommand;
 
-    public TlkViewerViewModel(AppSettings appSettings, ITlkReader tlkReader, ITlkWriter tlkWriter, ILookupService lookupService, IJsonReader jsonReader)
+    public TlkViewerViewModel(AppSettings appSettings, ITlkReader tlkReader, ITlkWriter tlkWriter, ILookupService lookupService, IJsonReader jsonReader, IJsonWriter jsonWriter)
     {
         _appSettings = appSettings;
         _tlkReader = tlkReader;
         _tlkWriter = tlkWriter;
         _lookupService = lookupService;
         _jsonReader = jsonReader;
+        _jsonWriter = jsonWriter;
     }
-
-    public string Filter { get; set; }
 
     public ObservableCollection<TlkEntryModel> Entries { get; } = [];
 
+    public string Filter { get; set; }
+
     public TlkEntryModel SelectedEntry { get; set; }
 
-    public Command FilterCommand => _filterCommand ??= new Command(x => FilterEntries());
+    public Command FilterCommand => _filterCommand ??= new Command(_ => FilterEntries());
 
-    public Command EditCommand => _editCommand ??= new Command(x => ShowEntryEditor(), x => SelectedEntry != null);
+    public Command EditCommand => _editCommand ??= new Command(_ => ShowEntryEditor(), _ => SelectedEntry != null);
 
-    public Command SelectContextCommand => _selectContextCommand ??= new Command(x => ShowContextSelector(), x => SelectedEntry?.IsContextAvailable == true);
+    public Command SelectContextCommand => _selectContextCommand ??= new Command(_ => ShowContextSelector(), _ => SelectedEntry?.IsContextAvailable == true);
 
-    public Command SettingsCommand => _settingsCommand ??= new Command(async x => await ShowSettingsEditorAndReloadEntries());
+    public Command SettingsCommand => _settingsCommand ??= new Command(async _ => await ShowSettingsEditorAndReloadEntries());
 
-    public Command SaveCommand => _saveCommand ??= new Command(async x => await SaveLocalisedFile(), x => Entries.Any());
+    public Command ExportLocalisedCommand => _exportLocalisedCommand ??= new Command(
+        async _ => await ExportEntries(_unfilteredEntries.Select(x => x.Value).ToArray()),
+        _ => _unfilteredEntries != null);
+
+    public Command ExportOriginalCommand => _exportOriginalCommand ??= new Command(async _ => await ExportEntries(_originalEntries), _ => _originalEntries != null);
+
+    public Command SaveCommand => _saveCommand ??= new Command(async _ => await SaveLocalisedFile(), _ => _unfilteredEntries != null);
 
     public override async Task Init()
     {
         Title = Strings.TlkViewer_Title;
 
         var isEncodingNameValid = DataConstants.AvailableEncodingNames.Contains(_appSettings.EncodingName);
-        if (!isEncodingNameValid || !AreFilePathsSet())
+        if (!isEncodingNameValid || !_appSettings.LanguageCode.IsValidLanguageCode() || !AreFilePathsSet())
         {
             var areFilePathsSet = ShowSettingsEditor();
             if (!areFilePathsSet)
@@ -84,6 +97,19 @@ public class TlkViewerViewModel : ViewModelBase
 
         await LoadLocalisedEntries();
         await LoadOriginalEntries();
+
+        _saveFileDialog = new SaveFileDialog
+        {
+            AddExtension = true,
+            AddToRecent = false,
+            CheckPathExists = true,
+            CreateTestFile = true,
+            DereferenceLinks = true,
+            Filter = DataConstants.JsonFilesFilter,
+            InitialDirectory = Environment.CurrentDirectory,
+            OverwritePrompt = true,
+        };
+
         IsLoading = false;
     }
 
@@ -107,7 +133,14 @@ public class TlkViewerViewModel : ViewModelBase
 
     private void ShowEntryEditor()
     {
-        var parameters = new EntryEditorParameters { StrRef = SelectedEntry.StrRef, OriginalValue = _originalEntries[SelectedEntry.StrRef], LocalisedValue = SelectedEntry.Value };
+        var parameters = new EntryEditorParameters
+        {
+            StrRef = SelectedEntry.StrRef,
+            OriginalValue = _originalEntries[SelectedEntry.StrRef],
+            LocalisedValue = SelectedEntry.Value,
+            LanguageCode = _appSettings.LanguageCode,
+        };
+
         var entryEditorViewModel = ServiceProviderContainer.GetRequiredService<EntryEditorViewModel>();
         entryEditorViewModel.SetParameters(parameters);
         Dialog.ShowDialog(entryEditorViewModel, this);
@@ -151,6 +184,19 @@ public class TlkViewerViewModel : ViewModelBase
         }
 
         IsLoading = false;
+    }
+
+    private async Task ExportEntries(string[] entries)
+    {
+        var isFileSelected = _saveFileDialog.ShowDialog();
+        if (isFileSelected != true)
+        {
+            return;
+        }
+
+        await _jsonWriter.Write(entries, _saveFileDialog.FileName);
+        _saveFileDialog.FileName = null;
+        MessageBox.Show(Strings.TlkViewer_EntriesWereExportedMessage, Strings.InformationMessage_Title);
     }
 
     private async Task SaveLocalisedFile()

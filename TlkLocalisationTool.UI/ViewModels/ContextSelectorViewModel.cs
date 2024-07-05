@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,11 +18,11 @@ public class ContextSelectorViewModel : ViewModelBase
 
     private Command _showContextCommand;
 
-    public ObservableCollection<FilePathModel> FilePaths { get; } = [];
+    public List<FilePathModel> FilePaths { get; } = [];
 
     public FilePathModel SelectedFilePath { get; set; }
 
-    public Command ShowContextCommand => _showContextCommand ??= new Command(x => ShowContext(), x => SelectedFilePath?.IsContextAvailable == true);
+    public Command ShowContextCommand => _showContextCommand ??= new Command(_ => ShowContext(), _ => SelectedFilePath?.IsContextAvailable == true);
 
     public void SetParameters(ContextSelectorParameters parameters)
     {

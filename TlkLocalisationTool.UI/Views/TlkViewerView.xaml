@@ -13,8 +13,12 @@
         <DockPanel IsEnabled="{Binding IsLoading, Converter={StaticResource BoolReverseConverter}}">
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
-                    <MenuItem Header="Settings" Command="{Binding SettingsCommand}"/>
                     <MenuItem Header="_Save" Command="{Binding SaveCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Export _localised entries" Command="{Binding ExportLocalisedCommand}"/>
+                    <MenuItem Header="Export _original entries" Command="{Binding ExportOriginalCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Settings" Command="{Binding SettingsCommand}"/>
                 </MenuItem>
             </Menu>
             <Grid>
