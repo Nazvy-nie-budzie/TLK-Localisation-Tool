@@ -34,6 +34,7 @@ internal class SpellCheckTextBox : TextBox
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
         SpellCheck.CustomDictionaries.Clear();
+        Loaded -= OnLoaded;
         Unloaded -= OnUnloaded;
     }
 }
