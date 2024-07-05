@@ -41,6 +41,8 @@ public class SettingsEditorViewModel : ViewModelBase
         _jsonWriter = jsonWriter;
     }
 
+    public ObservableCollection<string> EncodingNames { get; } = [];
+
     public string LocalisedTlkFilePath
     {
         get => _localisedTlkFilePath;
@@ -80,8 +82,6 @@ public class SettingsEditorViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
-
-    public ObservableCollection<string> EncodingNames { get; } = [];
 
     public string SelectedEncodingName
     {

@@ -6,6 +6,8 @@ internal static class DataConstants
 
     public const string LookupDataFileName = "lookup.json";
 
+    public const string LexFileSearchPattern = "*.lex";
+
     public const string TlkFilesFilter = "TalkTable file (*.tlk)|*.tlk";
 
     public const string JsonFilesFilter = "JSON file (*.json)|*.json";

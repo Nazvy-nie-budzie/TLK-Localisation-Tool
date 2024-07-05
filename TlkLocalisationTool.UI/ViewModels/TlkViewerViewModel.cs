@@ -48,9 +48,9 @@ public class TlkViewerViewModel : ViewModelBase
         _jsonWriter = jsonWriter;
     }
 
-    public string Filter { get; set; }
-
     public ObservableCollection<TlkEntryModel> Entries { get; } = [];
+
+    public string Filter { get; set; }
 
     public TlkEntryModel SelectedEntry { get; set; }
 
@@ -66,7 +66,7 @@ public class TlkViewerViewModel : ViewModelBase
         async _ => await ExportEntries(_unfilteredEntries.Select(x => x.Value).ToArray()),
         _ => _unfilteredEntries != null);
 
-    public Command ExportOriginalCommand => _exportOriginalCommand ??= new Command(async _ => await ExportEntries(_originalEntries), _ => _unfilteredEntries != null);
+    public Command ExportOriginalCommand => _exportOriginalCommand ??= new Command(async _ => await ExportEntries(_originalEntries), _ => _originalEntries != null);
 
     public Command SaveCommand => _saveCommand ??= new Command(async _ => await SaveLocalisedFile(), _ => _unfilteredEntries != null);
 

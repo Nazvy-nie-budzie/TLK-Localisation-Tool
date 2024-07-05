@@ -1,5 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Markup;
+using TlkLocalisationTool.UI.Constants;
 using TlkLocalisationTool.UI.Parameters;
 using TlkLocalisationTool.UI.Resources;
 using TlkLocalisationTool.UI.Utils;
@@ -12,13 +16,15 @@ public class EntryEditorViewModel : ViewModelBase
 
     private Command _saveCommand;
 
+    public List<Uri> SpellCheckFileUris { get; } = [];
+
     public bool AreChangesSaved { get; private set; }
 
-    public string OriginalValue { get; set; }
+    public XmlLanguage Language { get; private set; }
+
+    public string OriginalValue { get; private set; }
 
     public string LocalisedValue { get; set; }
-
-    public XmlLanguage Language { get; set; }
 
     public Command SaveCommand => _saveCommand ??= new Command(_ => SaveChanges());
 
@@ -33,6 +39,13 @@ public class EntryEditorViewModel : ViewModelBase
     public override Task Init()
     {
         Title = string.Format(Strings.EntryEditor_Title, _strRef);
+
+        var lexFileNames = Directory.GetFiles(Directory.GetCurrentDirectory(), DataConstants.LexFileSearchPattern);
+        foreach (var lexFileName in lexFileNames)
+        {
+            SpellCheckFileUris.Add(new Uri(lexFileName));
+        }
+
         return Task.CompletedTask;
     }
 
