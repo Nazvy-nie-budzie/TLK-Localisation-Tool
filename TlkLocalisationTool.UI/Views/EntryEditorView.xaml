@@ -18,7 +18,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Content="Original"/>
-        <TextBox Grid.Row="1" Text="{Binding OriginalValue}" IsReadOnly="True"/>
+        <TextBox Grid.Row="1" Text="{Binding OriginalValue, Mode=OneWay}" IsReadOnly="True"/>
         <Label Grid.Row="2" Content="Localised"/>
         <controls:SpellCheckTextBox Grid.Row="3" Text="{Binding LocalisedValue}" Language="{Binding Language}" SpellCheckDictionaries="{Binding SpellCheckFileUris}"/>
         <Button Grid.Row="4" Content="Save" Command="{Binding SaveCommand}"/>
