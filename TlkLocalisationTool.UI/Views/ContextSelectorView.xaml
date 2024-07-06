@@ -13,7 +13,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <ListBox Grid.Row="0" ItemsSource="{Binding FilePaths}" SelectedItem="{Binding SelectedFilePath}" DisplayMemberPath="Value"/>
+        <ListBox Grid.Row="0" ItemsSource="{Binding FileNames}" SelectedItem="{Binding SelectedFileName}" DisplayMemberPath="Value"/>
         <Button Grid.Row="1" Content="Select" Command="{Binding ShowContextCommand}"/>
     </Grid>
 </views:ViewBase>

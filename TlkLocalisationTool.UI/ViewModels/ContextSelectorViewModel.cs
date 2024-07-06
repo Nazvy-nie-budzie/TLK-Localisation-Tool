@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using TlkLocalisationTool.Shared.Constants;
+using TlkLocalisationTool.Shared.Settings;
 using TlkLocalisationTool.UI.Models;
 using TlkLocalisationTool.UI.Parameters;
 using TlkLocalisationTool.UI.Resources;
@@ -13,39 +15,56 @@ namespace TlkLocalisationTool.UI.ViewModels;
 
 public class ContextSelectorViewModel : ViewModelBase
 {
+    private readonly AppSettings _appSettings;
+
     private int _strRef; 
     private Dictionary<int, string> _tlkEntriesDictionary;
+    private bool _areAllFilesExist = true;
 
     private Command _showContextCommand;
 
-    public List<FilePathModel> FilePaths { get; } = [];
+    public ContextSelectorViewModel(AppSettings appSettings)
+    {
+        _appSettings = appSettings;
+    }
 
-    public FilePathModel SelectedFilePath { get; set; }
+    public List<FileNameModel> FileNames { get; } = [];
 
-    public Command ShowContextCommand => _showContextCommand ??= new Command(_ => ShowContext(), _ => SelectedFilePath?.IsContextAvailable == true);
+    public FileNameModel SelectedFileName { get; set; }
+
+    public Command ShowContextCommand => _showContextCommand ??= new Command(_ => ShowContext(), _ => SelectedFileName?.IsContextAvailable == true);
 
     public void SetParameters(ContextSelectorParameters parameters)
     {
         _strRef = parameters.StrRef;
         _tlkEntriesDictionary = parameters.TlkEntriesDictionary;
-        foreach (var filePath in parameters.FilePaths)
+        foreach (var fileName in parameters.FileNames)
         {
-            var fileExtension = Path.GetExtension(filePath);
-            var isContextAvailable = fileExtension == SharedFileConstants.TdaFileExtension || SharedFileConstants.GffFileExtensions.Contains(fileExtension);
-            var filePathModel = new FilePathModel { Value = filePath, IsContextAvailable = isContextAvailable };
-            FilePaths.Add(filePathModel);
+            var filePath = Path.Combine(_appSettings.ExtractedGameFilesPath, fileName);
+            var isFileExist = File.Exists(filePath);
+            _areAllFilesExist &= isFileExist;
+            var fileExtension = Path.GetExtension(fileName);
+            var isContextAvailableForFileExtension = fileExtension == SharedFileConstants.TdaFileExtension || SharedFileConstants.GffFileExtensions.Contains(fileExtension);
+            var fileNameModel = new FileNameModel { Value = fileName, IsContextAvailable = isFileExist && isContextAvailableForFileExtension };
+            FileNames.Add(fileNameModel);
         }
     }
 
     public override Task Init()
     {
         Title = string.Format(Strings.ContextSelector_Title, _strRef);
+
+        if (!_areAllFilesExist)
+        {
+            MessageBox.Show(Strings.ContextSelectror_SomeFilesDontExistMessage, Strings.ErrorMessage_Title);
+        }
+
         return Task.CompletedTask;
     }
 
     private void ShowContext()
     {
-        var fileExtension = Path.GetExtension(SelectedFilePath.Value);
+        var fileExtension = Path.GetExtension(SelectedFileName.Value);
         if (fileExtension == SharedFileConstants.TdaFileExtension)
         {
             ShowTdaViewer();
@@ -83,7 +102,7 @@ public class ContextSelectorViewModel : ViewModelBase
 
     private FileViewerParameters GetFileViewerParameters()
     {
-        var parameters = new FileViewerParameters { FileName = SelectedFilePath.Value, TlkEntriesDictionary = _tlkEntriesDictionary };
+        var parameters = new FileViewerParameters { FileName = SelectedFileName.Value, TlkEntriesDictionary = _tlkEntriesDictionary };
         return parameters;
     }
 }
