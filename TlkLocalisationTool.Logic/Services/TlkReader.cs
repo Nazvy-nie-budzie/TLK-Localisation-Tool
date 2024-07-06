@@ -44,6 +44,11 @@ internal class TlkReader : ITlkReader
 
     private bool IsValidInternal(string filePath)
     {
+        if (!File.Exists(filePath))
+        {
+            return false;
+        }
+
         using var reader = new BinaryReader(File.OpenRead(filePath));
         return IsValidFileType(reader);
     }

@@ -62,19 +62,19 @@ internal class LookupService : ILookupService
 
     private async Task AddStrRefsToLookupDictionary(string filePath, Func<string, Task<int[]>> strRefsReader, Dictionary<int, List<string>> lookupDictionary)
     {
-        var filePathForLookup = GetFilePathForLookup(filePath);
+        var fileNameForLookup = GetFileNameForLookup(filePath);
         var strRefs = await strRefsReader(filePath);
         foreach (var strRef in strRefs)
         {
-            if (!lookupDictionary.TryGetValue(strRef, out var strRefFilePaths))
+            if (!lookupDictionary.TryGetValue(strRef, out var strRefFileNames))
             {
-                strRefFilePaths = new List<string>();
-                lookupDictionary.Add(strRef, strRefFilePaths);
+                strRefFileNames = new List<string>();
+                lookupDictionary.Add(strRef, strRefFileNames);
             }
 
-            strRefFilePaths.Add(filePathForLookup);
+            strRefFileNames.Add(fileNameForLookup);
         }
     }
 
-    private string GetFilePathForLookup(string filePath) => Path.GetRelativePath(_appSettings.ExtractedGameFilesPath, filePath).Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+    private string GetFileNameForLookup(string filePath) => Path.GetRelativePath(_appSettings.ExtractedGameFilesPath, filePath).Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 }

@@ -147,7 +147,7 @@ public class SettingsEditorViewModel : ViewModelBase
             return _openFileDialog.FileName;
         }
 
-        MessageBox.Show(Strings.SettingsEditor_SelectedFileIsNotTlkMessage, Strings.ErrorMessage_Title);
+        MessageBox.Show(Strings.SettingsEditor_SelectedFileIsNotValidTlkMessage, Strings.ErrorMessage_Title);
         return currentFilePath;
     }
 

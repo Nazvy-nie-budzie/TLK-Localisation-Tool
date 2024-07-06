@@ -70,6 +70,15 @@ namespace TlkLocalisationTool.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Some files from the list don&apos;t exist. Please, regenerate lookup file..
+        /// </summary>
+        internal static string ContextSelectror_SomeFilesDontExistMessage {
+            get {
+                return ResourceManager.GetString("ContextSelectror_SomeFilesDontExistMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loading....
         /// </summary>
         internal static string DefaultTitle {
@@ -205,11 +214,11 @@ namespace TlkLocalisationTool.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Selected file is not a TLK file.
+        ///   Looks up a localized string similar to Selected file is not a valid TLK file.
         /// </summary>
-        internal static string SettingsEditor_SelectedFileIsNotTlkMessage {
+        internal static string SettingsEditor_SelectedFileIsNotValidTlkMessage {
             get {
-                return ResourceManager.GetString("SettingsEditor_SelectedFileIsNotTlkMessage", resourceCulture);
+                return ResourceManager.GetString("SettingsEditor_SelectedFileIsNotValidTlkMessage", resourceCulture);
             }
         }
         
@@ -241,11 +250,49 @@ namespace TlkLocalisationTool.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Changes were saved..
+        /// </summary>
+        internal static string TlkViewer_ChangesWereSavedMessage {
+            get {
+                return ResourceManager.GetString("TlkViewer_ChangesWereSavedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Entries were exported..
         /// </summary>
         internal static string TlkViewer_EntriesWereExportedMessage {
             get {
                 return ResourceManager.GetString("TlkViewer_EntriesWereExportedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extracted game files path is invalid. Lookup file can&apos;t be generated..
+        /// </summary>
+        internal static string TlkViewer_ExtractedGameFilesPathIsInvalidMessage {
+            get {
+                return ResourceManager.GetString("TlkViewer_ExtractedGameFilesPathIsInvalidMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extracted game files path was changed. Do you want to (re)generate lookup file now?
+        ///NOTE: it might take couple of minutes..
+        /// </summary>
+        internal static string TlkViewer_ExtractedGameFilesPathWasChangedMessage {
+            get {
+                return ResourceManager.GetString("TlkViewer_ExtractedGameFilesPathWasChangedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure that you want to (re)generate lookup file?
+        ///NOTE: it might take couple of minutes..
+        /// </summary>
+        internal static string TlkViewer_LookupFileGenerationConfirmationMessage {
+            get {
+                return ResourceManager.GetString("TlkViewer_LookupFileGenerationConfirmationMessage", resourceCulture);
             }
         }
         
@@ -278,11 +325,11 @@ namespace TlkLocalisationTool.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You have to setup .tlk file paths..
+        ///   Looks up a localized string similar to You have to set up paths to valid .tlk files..
         /// </summary>
-        internal static string TlkViewer_TlkFilePathsAreNotSetUpMessage {
+        internal static string TlkViewer_TlkFilePathsAreInvalidMessage {
             get {
-                return ResourceManager.GetString("TlkViewer_TlkFilePathsAreNotSetUpMessage", resourceCulture);
+                return ResourceManager.GetString("TlkViewer_TlkFilePathsAreInvalidMessage", resourceCulture);
             }
         }
     }

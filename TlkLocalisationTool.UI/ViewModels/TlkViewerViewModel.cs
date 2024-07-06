@@ -34,6 +34,7 @@ public class TlkViewerViewModel : ViewModelBase
     private Command _editCommand;
     private Command _selectContextCommand;
     private Command _settingsCommand;
+    private Command _generateLookupFileCommand;
     private Command _exportLocalisedCommand;
     private Command _exportOriginalCommand;
     private Command _saveCommand;
@@ -62,6 +63,8 @@ public class TlkViewerViewModel : ViewModelBase
 
     public Command SettingsCommand => _settingsCommand ??= new Command(async _ => await ShowSettingsEditorAndReloadEntries());
 
+    public Command GenerateLookupFileCommand => _generateLookupFileCommand ??= new Command(async _ => await GenerateLookupFile());
+
     public Command ExportLocalisedCommand => _exportLocalisedCommand ??= new Command(
         async _ => await ExportEntries(_unfilteredEntries.Select(x => x.Value).ToArray()),
         _ => _unfilteredEntries != null);
@@ -74,18 +77,14 @@ public class TlkViewerViewModel : ViewModelBase
     {
         Title = Strings.TlkViewer_Title;
 
-        var isEncodingNameValid = DataConstants.AvailableEncodingNames.Contains(_appSettings.EncodingName);
-        if (!isEncodingNameValid || !_appSettings.LanguageCode.IsValidLanguageCode() || !AreFilePathsSet())
+        var areSettigsValid = await ValidateSettings();
+        if (!areSettigsValid)
         {
-            var areFilePathsSet = ShowSettingsEditor();
-            if (!areFilePathsSet)
-            {
-                return;
-            }
+            return;
         }
 
         IsLoading = true;
-        if (!string.IsNullOrWhiteSpace(_appSettings.ExtractedGameFilesPath) && !File.Exists(DataConstants.LookupDataFileName))
+        if (Directory.Exists(_appSettings.ExtractedGameFilesPath) && !File.Exists(DataConstants.LookupDataFileName))
         {
             var messageBoxResult = MessageBox.Show(Strings.TlkViewer_LookupFileIsNotGeneratedMessage, Strings.InformationMessage_Title, MessageBoxButton.YesNo);
             if (messageBoxResult == MessageBoxResult.Yes)
@@ -153,10 +152,10 @@ public class TlkViewerViewModel : ViewModelBase
     private void ShowContextSelector()
     {
         var contextEntriesDictionary = _unfilteredEntries
-            .Where(e => e.IsContextAvailable && e.FilePaths.Any(x => SelectedEntry.FilePaths.Contains(x)))
+            .Where(e => e.IsContextAvailable && e.FileNames.Any(x => SelectedEntry.FileNames.Contains(x)))
             .ToDictionary(x => x.StrRef, x => x.Value);
 
-        var parameters = new ContextSelectorParameters { StrRef = SelectedEntry.StrRef, FilePaths = SelectedEntry.FilePaths, TlkEntriesDictionary = contextEntriesDictionary };
+        var parameters = new ContextSelectorParameters { StrRef = SelectedEntry.StrRef, FileNames = SelectedEntry.FileNames, TlkEntriesDictionary = contextEntriesDictionary };
         var contextSelectorViewModel = ServiceProviderContainer.GetRequiredService<ContextSelectorViewModel>();
         contextSelectorViewModel.SetParameters(parameters);
         Dialog.ShowDialog(contextSelectorViewModel, this);
@@ -166,24 +165,63 @@ public class TlkViewerViewModel : ViewModelBase
     {
         var previousLocalisedTlkFilePath = _appSettings.LocalisedTlkFilePath;
         var previousOriginalTlkFilePath = _appSettings.OriginalTlkFilePath;
-        var areFilePathsSet = ShowSettingsEditor();
-        if (!areFilePathsSet)
+        var previousExtractedGameFilesPath = _appSettings.ExtractedGameFilesPath;
+        var areTlkFilesValid = await ShowSettingsEditor();
+        if (!areTlkFilesValid)
+        {
+            Entries.Clear();
+            _unfilteredEntries = null;
+            _originalEntries = null;
+            return;
+        }
+
+        var isLookupFileGeneratedForNewPath = false;
+        if (previousExtractedGameFilesPath != _appSettings.ExtractedGameFilesPath && Directory.Exists(_appSettings.ExtractedGameFilesPath))
+        {
+            var messageBoxResult = MessageBox.Show(Strings.TlkViewer_ExtractedGameFilesPathWasChangedMessage, Strings.InformationMessage_Title, MessageBoxButton.YesNo);
+            if (messageBoxResult == MessageBoxResult.Yes)
+            {
+                IsLoading = true;
+                await _lookupService.CreateLookupFile(DataConstants.LookupDataFileName);
+                isLookupFileGeneratedForNewPath = true;
+            }
+        }
+
+        if (previousLocalisedTlkFilePath != _appSettings.LocalisedTlkFilePath || _unfilteredEntries == null || isLookupFileGeneratedForNewPath)
+        {
+            IsLoading = true;
+            await LoadLocalisedEntries();
+        }
+
+        if (previousOriginalTlkFilePath != _appSettings.OriginalTlkFilePath || _originalEntries == null)
+        {
+            IsLoading = true;
+            await LoadOriginalEntries();
+        }
+
+        IsLoading = false;
+    }
+
+    private async Task GenerateLookupFile()
+    {
+        if (!Directory.Exists(_appSettings.ExtractedGameFilesPath))
+        {
+            MessageBox.Show(Strings.TlkViewer_ExtractedGameFilesPathIsInvalidMessage, Strings.ErrorMessage_Title);
+            return;
+        }
+
+        var messageBoxResult = MessageBox.Show(Strings.TlkViewer_LookupFileGenerationConfirmationMessage, Strings.InformationMessage_Title, MessageBoxButton.YesNo);
+        if (messageBoxResult != MessageBoxResult.Yes)
         {
             return;
         }
 
         IsLoading = true;
-        if (previousLocalisedTlkFilePath != _appSettings.LocalisedTlkFilePath)
-        {
-            await LoadLocalisedEntries();
-        }
-
-        if (previousOriginalTlkFilePath != _appSettings.OriginalTlkFilePath)
-        {
-            await LoadOriginalEntries();
-        }
-
+        await _lookupService.CreateLookupFile(DataConstants.LookupDataFileName);
+        await LoadLocalisedEntries();
         IsLoading = false;
+
+        MessageBox.Show(Strings.TlkViewer_LookupFileWasGeneratedMessage, Strings.InformationMessage_Title);
     }
 
     private async Task ExportEntries(string[] entries)
@@ -203,15 +241,38 @@ public class TlkViewerViewModel : ViewModelBase
     {
         var entries = _unfilteredEntries.Select(x => x.Value).ToArray();
         await _tlkWriter.WriteEntries(entries, _appSettings.LocalisedTlkFilePath);
+        MessageBox.Show(Strings.TlkViewer_ChangesWereSavedMessage, Strings.InformationMessage_Title);
     }
 
-    private bool ShowSettingsEditor()
+    private async Task<bool> ValidateSettings()
+    {
+        var isEncodingNameValid = DataConstants.AvailableEncodingNames.Contains(_appSettings.EncodingName);
+        var areTlkFilesValid = await ValidateTlkFiles();
+        if (!isEncodingNameValid || !_appSettings.LanguageCode.IsValidLanguageCode() || !areTlkFilesValid)
+        {
+            if (!areTlkFilesValid)
+            {
+                MessageBox.Show(Strings.TlkViewer_TlkFilePathsAreInvalidMessage, Strings.ErrorMessage_Title);
+            }
+
+            areTlkFilesValid = await ShowSettingsEditor();
+            if (!areTlkFilesValid)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private async Task<bool> ShowSettingsEditor()
     {
         var settingsEditorViewModel = ServiceProviderContainer.GetRequiredService<SettingsEditorViewModel>();
         Dialog.ShowDialog(settingsEditorViewModel, this);
-        if (!AreFilePathsSet())
+        var areTlkFilesValid = await ValidateTlkFiles();
+        if (!areTlkFilesValid)
         {
-            MessageBox.Show(Strings.TlkViewer_TlkFilePathsAreNotSetUpMessage, Strings.ErrorMessage_Title);
+            MessageBox.Show(Strings.TlkViewer_TlkFilePathsAreInvalidMessage, Strings.ErrorMessage_Title);
             return false;
         }
 
@@ -220,12 +281,16 @@ public class TlkViewerViewModel : ViewModelBase
 
     private async Task LoadLocalisedEntries()
     {
-        var lookupDictionary = await _jsonReader.Read<Dictionary<int, string[]>>(DataConstants.LookupDataFileName);
+        var lookupDictionary = File.Exists(DataConstants.LookupDataFileName)
+            ? await _jsonReader.Read<Dictionary<int, string[]>>(DataConstants.LookupDataFileName)
+            : new Dictionary<int, string[]>();
+
+        Entries.Clear();
         var entries = await _tlkReader.ReadEntries(_appSettings.LocalisedTlkFilePath);
         for (var i = 0; i < entries.Length; i++)
         {
-            lookupDictionary.TryGetValue(i, out var filePaths);
-            var entryModel = new TlkEntryModel { Value = entries[i], StrRef = i, FilePaths = filePaths };
+            lookupDictionary.TryGetValue(i, out var fileNames);
+            var entryModel = new TlkEntryModel { Value = entries[i], StrRef = i, FileNames = fileNames };
             Entries.Add(entryModel);
         }
 
@@ -234,5 +299,15 @@ public class TlkViewerViewModel : ViewModelBase
 
     private async Task LoadOriginalEntries() => _originalEntries = await _tlkReader.ReadEntries(_appSettings.OriginalTlkFilePath);
 
-    private bool AreFilePathsSet() => !string.IsNullOrWhiteSpace(_appSettings.LocalisedTlkFilePath) && !string.IsNullOrWhiteSpace(_appSettings.OriginalTlkFilePath);
+    private async Task<bool> ValidateTlkFiles()
+    {
+        var isLocalisedFileValid = await _tlkReader.IsValidFile(_appSettings.LocalisedTlkFilePath);
+        if (!isLocalisedFileValid)
+        {
+            return false;
+        }
+
+        var isOriginalFileValid = await _tlkReader.IsValidFile(_appSettings.OriginalTlkFilePath);
+        return isOriginalFileValid;
+    }
 }

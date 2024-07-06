@@ -1,6 +1,6 @@
 ﻿namespace TlkLocalisationTool.UI.Models;
 
-public class FilePathModel
+public class FileNameModel
 {
     public string Value { get; set; }
 

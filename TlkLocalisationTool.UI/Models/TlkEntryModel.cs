@@ -4,11 +4,11 @@ public class TlkEntryModel : ModelBase
 {
     private string _value;
 
-    public bool IsContextAvailable => FilePaths != null;
+    public bool IsContextAvailable => FileNames != null;
 
     public int StrRef { get; set; }
 
-    public string[] FilePaths { get; set; }
+    public string[] FileNames { get; set; }
 
     public string Value
     {

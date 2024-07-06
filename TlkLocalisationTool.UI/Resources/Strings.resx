@@ -120,6 +120,9 @@
   <data name="ContextSelector_Title" xml:space="preserve">
     <value>Context Selector - StrRef {0}</value>
   </data>
+  <data name="ContextSelectror_SomeFilesDontExistMessage" xml:space="preserve">
+    <value>Some files from the list don't exist. Please, regenerate lookup file.</value>
+  </data>
   <data name="DefaultTitle" xml:space="preserve">
     <value>Loading...</value>
   </data>
@@ -165,8 +168,8 @@
   <data name="SettingsEditor_InvalidLanguageCodeWasClearedMessage" xml:space="preserve">
     <value>Language code was invalid, so it was cleared.</value>
   </data>
-  <data name="SettingsEditor_SelectedFileIsNotTlkMessage" xml:space="preserve">
-    <value>Selected file is not a TLK file</value>
+  <data name="SettingsEditor_SelectedFileIsNotValidTlkMessage" xml:space="preserve">
+    <value>Selected file is not a valid TLK file</value>
   </data>
   <data name="SettingsEditor_Title" xml:space="preserve">
     <value>Settings</value>
@@ -177,8 +180,22 @@
   <data name="TdaViewer_Title" xml:space="preserve">
     <value>2DA Viewer - {0}</value>
   </data>
+  <data name="TlkViewer_ChangesWereSavedMessage" xml:space="preserve">
+    <value>Changes were saved.</value>
+  </data>
   <data name="TlkViewer_EntriesWereExportedMessage" xml:space="preserve">
     <value>Entries were exported.</value>
+  </data>
+  <data name="TlkViewer_ExtractedGameFilesPathIsInvalidMessage" xml:space="preserve">
+    <value>Extracted game files path is invalid. Lookup file can't be generated.</value>
+  </data>
+  <data name="TlkViewer_ExtractedGameFilesPathWasChangedMessage" xml:space="preserve">
+    <value>Extracted game files path was changed. Do you want to (re)generate lookup file now?
+NOTE: it might take couple of minutes.</value>
+  </data>
+  <data name="TlkViewer_LookupFileGenerationConfirmationMessage" xml:space="preserve">
+    <value>Are you sure that you want to (re)generate lookup file?
+NOTE: it might take couple of minutes.</value>
   </data>
   <data name="TlkViewer_LookupFileIsNotGeneratedMessage" xml:space="preserve">
     <value>Lookup file is not yet generated. Do you want to generate it now?
@@ -190,7 +207,7 @@ NOTE: it might take couple of minutes.</value>
   <data name="TlkViewer_Title" xml:space="preserve">
     <value>TLK Localisation Tool</value>
   </data>
-  <data name="TlkViewer_TlkFilePathsAreNotSetUpMessage" xml:space="preserve">
-    <value>You have to setup .tlk file paths.</value>
+  <data name="TlkViewer_TlkFilePathsAreInvalidMessage" xml:space="preserve">
+    <value>You have to set up paths to valid .tlk files.</value>
   </data>
 </root>
