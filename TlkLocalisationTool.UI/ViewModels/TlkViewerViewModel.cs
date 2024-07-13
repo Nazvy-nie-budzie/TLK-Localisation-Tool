@@ -28,7 +28,10 @@ public class TlkViewerViewModel : ViewModelBase
 
     private TlkEntryModel[] _unfilteredEntries;
     private string[] _originalEntries;
+    private TlkEntryModel _previousSelectedEntry;
     private SaveFileDialog _saveFileDialog;
+
+    private TlkEntryModel _selectedEntry;
 
     private Command _filterCommand;
     private Command _editCommand;
@@ -53,7 +56,16 @@ public class TlkViewerViewModel : ViewModelBase
 
     public string Filter { get; set; }
 
-    public TlkEntryModel SelectedEntry { get; set; }
+    public TlkEntryModel SelectedEntry
+    {
+        get => _selectedEntry;
+        set
+        {
+           _previousSelectedEntry = _selectedEntry;
+            _selectedEntry = value;
+            OnPropertyChanged();
+        }
+    }
 
     public Command FilterCommand => _filterCommand ??= new Command(_ => FilterEntries());
 
@@ -83,19 +95,23 @@ public class TlkViewerViewModel : ViewModelBase
             return;
         }
 
-        IsLoading = true;
         if (Directory.Exists(_appSettings.ExtractedGameFilesPath) && !File.Exists(DataConstants.LookupDataFileName))
         {
             var messageBoxResult = MessageBox.Show(Strings.TlkViewer_LookupFileIsNotGeneratedMessage, Strings.InformationMessage_Title, MessageBoxButton.YesNo);
             if (messageBoxResult == MessageBoxResult.Yes)
             {
+                IsLoading = true;
                 await _lookupService.CreateLookupFile(DataConstants.LookupDataFileName);
+                IsLoading = false;
+
                 MessageBox.Show(Strings.TlkViewer_LookupFileWasGeneratedMessage, Strings.InformationMessage_Title);
             }
         }
 
+        IsLoading = true;
         await LoadLocalisedEntries();
         await LoadOriginalEntries();
+        SelectedEntry = Entries[0];
 
         _saveFileDialog = new SaveFileDialog
         {
@@ -118,6 +134,7 @@ public class TlkViewerViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(Filter))
         {
             Array.ForEach(_unfilteredEntries, Entries.Add);
+            SelectedEntry = _previousSelectedEntry;
             return;
         }
 
@@ -126,6 +143,10 @@ public class TlkViewerViewModel : ViewModelBase
             if (entry.Value.Contains(Filter, StringComparison.OrdinalIgnoreCase))
             {
                 Entries.Add(entry);
+                if (entry == _previousSelectedEntry)
+                {
+                    SelectedEntry = entry;
+                }
             }
         }
     }
@@ -146,6 +167,10 @@ public class TlkViewerViewModel : ViewModelBase
         if (entryEditorViewModel.AreChangesSaved)
         {
             SelectedEntry.Value = entryEditorViewModel.LocalisedValue;
+            if (!string.IsNullOrWhiteSpace(Filter))
+            {
+                FilterEntries();
+            }
         }
     }
 
@@ -232,15 +257,21 @@ public class TlkViewerViewModel : ViewModelBase
             return;
         }
 
+        IsLoading = true;
         await _jsonWriter.Write(entries, _saveFileDialog.FileName);
+        IsLoading = false;
+
         _saveFileDialog.FileName = null;
         MessageBox.Show(Strings.TlkViewer_EntriesWereExportedMessage, Strings.InformationMessage_Title);
     }
 
     private async Task SaveLocalisedFile()
     {
+        IsLoading = true;
         var entries = _unfilteredEntries.Select(x => x.Value).ToArray();
         await _tlkWriter.WriteEntries(entries, _appSettings.LocalisedTlkFilePath);
+        IsLoading = false;
+
         MessageBox.Show(Strings.TlkViewer_ChangesWereSavedMessage, Strings.InformationMessage_Title);
     }
 
