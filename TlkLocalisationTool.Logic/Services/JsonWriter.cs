@@ -12,6 +12,8 @@ internal class JsonWriter : IJsonWriter
 
     public async Task Write<T>(T data, string filePath) => await Task.Run(() => WriteInternal(data, filePath));
 
+    public void WriteSync<T>(T data, string filePath) => WriteInternal(data, filePath);
+
     private static void WriteInternal<T>(T data, string filePath)
     {
         var dataJson = JsonSerializer.Serialize(data, JsonSerializerOptions);

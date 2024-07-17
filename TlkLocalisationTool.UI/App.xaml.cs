@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System.IO;
-using System.Text.Json;
 using System.Windows;
 using System.Windows.Threading;
 using TlkLocalisationTool.Logic.DependencyInjection;
+using TlkLocalisationTool.Logic.Services.Interfaces;
 using TlkLocalisationTool.Shared.Settings;
 using TlkLocalisationTool.UI.Constants;
 using TlkLocalisationTool.UI.DependencyInjection;
@@ -19,26 +18,42 @@ public partial class App : Application
     {
         Current.DispatcherUnhandledException += OnUnhandledException;
 
-        var appSettings = ReadAppSettings();
-        ServiceProviderContainer.TrySetServiceProvider(CreateServiceProvider(appSettings));
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddJsonServices();
+        var tempServiceProvider = serviceCollection.BuildServiceProvider();
+
+        var appSettings = ReadAppSettings(tempServiceProvider);
+        var serviceProvider = CreateServiceProvider(serviceCollection, appSettings);
+        ServiceProviderContainer.TrySetServiceProvider(serviceProvider);
 
         var viewerViewModel = ServiceProviderContainer.GetRequiredService<TlkViewerViewModel>();
         Dialog.Show(viewerViewModel, null);
     }
 
-    private static ServiceProvider CreateServiceProvider(AppSettings appSettings)
+    private void OnExit(object sender, ExitEventArgs e)
     {
-        var serviceCollection = new ServiceCollection();
+        if (e.ApplicationExitCode != 0)
+        {
+            return;
+        }
+
+        var appSettings = ServiceProviderContainer.GetRequiredService<AppSettings>();
+        var jsonWriter = ServiceProviderContainer.GetRequiredService<IJsonWriter>();
+        jsonWriter.WriteSync(appSettings, DataConstants.AppSettingsFileName);
+    }
+
+    private static ServiceProvider CreateServiceProvider(ServiceCollection serviceCollection, AppSettings appSettings)
+    {
         serviceCollection.AddSingleton(appSettings);
         serviceCollection.AddServices();
         serviceCollection.AddUI();
         return serviceCollection.BuildServiceProvider();
     }
 
-    private static AppSettings ReadAppSettings()
+    private static AppSettings ReadAppSettings(ServiceProvider serviceProvider)
     {
-        var appSettingsJson = File.ReadAllText(DataConstants.AppSettingsFileName);
-        var appSettings = JsonSerializer.Deserialize<AppSettings>(appSettingsJson);
+        var jsonReader = serviceProvider.GetRequiredService<IJsonReader>();
+        var appSettings = jsonReader.ReadSync<AppSettings>(DataConstants.AppSettingsFileName);
         return appSettings;
     }
 
@@ -46,5 +61,10 @@ public partial class App : Application
     {
         MessageBox.Show(e.Exception.Message, Strings.ErrorMessage_Title);
         e.Handled = true;
+
+        if (Windows.Count == 0)
+        {
+            Shutdown(1);
+        }
     }
 }

@@ -31,6 +31,7 @@ public class TlkViewerViewModel : ViewModelBase
     private TlkEntryModel _previousSelectedEntry;
     private SaveFileDialog _saveFileDialog;
 
+    private bool _isFilterByOriginalEntries;
     private TlkEntryModel _selectedEntry;
 
     private Command _filterCommand;
@@ -56,15 +57,20 @@ public class TlkViewerViewModel : ViewModelBase
 
     public string Filter { get; set; }
 
+    public bool IsFilterByOriginalEntries
+    {
+        get => _isFilterByOriginalEntries;
+        set
+        {
+            _isFilterByOriginalEntries = value;
+            FilterEntries();
+        }
+    }
+
     public TlkEntryModel SelectedEntry
     {
         get => _selectedEntry;
-        set
-        {
-           _previousSelectedEntry = _selectedEntry;
-            _selectedEntry = value;
-            OnPropertyChanged();
-        }
+        set => UpdateSelectedEntry(value);
     }
 
     public Command FilterCommand => _filterCommand ??= new Command(_ => FilterEntries());
@@ -111,7 +117,6 @@ public class TlkViewerViewModel : ViewModelBase
         IsLoading = true;
         await LoadLocalisedEntries();
         await LoadOriginalEntries();
-        SelectedEntry = Entries[0];
 
         _saveFileDialog = new SaveFileDialog
         {
@@ -140,7 +145,10 @@ public class TlkViewerViewModel : ViewModelBase
 
         foreach (var entry in _unfilteredEntries)
         {
-            if (entry.Value.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+            var isEntryFiltered = entry.Value.Contains(Filter, StringComparison.OrdinalIgnoreCase) 
+                || (IsFilterByOriginalEntries && _originalEntries[entry.StrRef].Contains(Filter, StringComparison.OrdinalIgnoreCase));
+
+            if (isEntryFiltered)
             {
                 Entries.Add(entry);
                 if (entry == _previousSelectedEntry)
@@ -326,6 +334,7 @@ public class TlkViewerViewModel : ViewModelBase
         }
 
         _unfilteredEntries = Entries.ToArray();
+        SelectInitialEntry();
     }
 
     private async Task LoadOriginalEntries() => _originalEntries = await _tlkReader.ReadEntries(_appSettings.OriginalTlkFilePath);
@@ -340,5 +349,27 @@ public class TlkViewerViewModel : ViewModelBase
 
         var isOriginalFileValid = await _tlkReader.IsValidFile(_appSettings.OriginalTlkFilePath);
         return isOriginalFileValid;
+    }
+
+    private void SelectInitialEntry()
+    {
+        if (_appSettings.LastSelectedStrRef > Entries.Count - 1 || _appSettings.LastSelectedStrRef < 0)
+        {
+            _appSettings.LastSelectedStrRef = 0;
+        }
+
+        SelectedEntry = Entries[_appSettings.LastSelectedStrRef];
+    }
+
+    private void UpdateSelectedEntry(TlkEntryModel newSelectedEntry)
+    {
+        if (newSelectedEntry != null)
+        {
+            _appSettings.LastSelectedStrRef = newSelectedEntry.StrRef;
+        }
+
+        _previousSelectedEntry = _selectedEntry;
+        _selectedEntry = newSelectedEntry;
+        OnPropertyChanged(nameof(SelectedEntry));
     }
 }

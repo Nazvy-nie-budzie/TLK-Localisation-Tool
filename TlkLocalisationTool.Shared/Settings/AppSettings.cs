@@ -11,4 +11,6 @@ public class AppSettings
     public string LanguageCode { get; set; }
 
     public string EncodingName { get; set; }
+
+    public int LastSelectedStrRef { get; set; }
 }
