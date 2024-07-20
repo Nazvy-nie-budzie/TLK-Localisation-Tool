@@ -10,7 +10,7 @@
 
   <PropertyGroup Condition="'$(PublishProtocol)' != ''">
     <AssemblyName>TLK Localisation Tool</AssemblyName>
-    <Version>0.3</Version>
+    <Version>0.4</Version>
     <AssemblyTitle>Tool that helps with SW KOTOR localisation</AssemblyTitle>
   </PropertyGroup>
 
