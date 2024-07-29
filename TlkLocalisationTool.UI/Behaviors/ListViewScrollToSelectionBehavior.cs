@@ -6,18 +6,13 @@ using System.Windows.Media;
 
 namespace TlkLocalisationTool.UI.Behaviors;
 
-internal class ScrollToSelectionBehavior : Behavior<ListView>
+internal class ListViewScrollToSelectionBehavior : Behavior<ListView>
 {
     protected override void OnAttached()
     {
         base.OnAttached();
         AssociatedObject.SelectionChanged += OnSelectionChanged;
-    }
-
-    protected override void OnDetaching()
-    {
-        base.OnDetaching();
-        AssociatedObject.SelectionChanged -= OnSelectionChanged;
+        AssociatedObject.Unloaded += OnUnloaded;
     }
 
     private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -32,10 +27,16 @@ internal class ScrollToSelectionBehavior : Behavior<ListView>
         }
     }
 
+    private void OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        AssociatedObject.SelectionChanged -= OnSelectionChanged;
+        AssociatedObject.Unloaded -= OnUnloaded;
+    }
+
     private ScrollViewer GetScrollViewer()
     {
         var dependencyObjectsQueue = new Queue<DependencyObject>([AssociatedObject]);
-        while (dependencyObjectsQueue.Count != 0)
+        do
         {
             var dependencyObject = dependencyObjectsQueue.Dequeue();
             var dependencyObjectChildrenCount = VisualTreeHelper.GetChildrenCount(dependencyObject);
@@ -50,6 +51,7 @@ internal class ScrollToSelectionBehavior : Behavior<ListView>
                 dependencyObjectsQueue.Enqueue(dependencyObjectChild);
             }
         }
+        while (dependencyObjectsQueue.Count != 0);
 
         return null;
     }

@@ -3,8 +3,13 @@ using TlkLocalisationTool.UI.Resources;
 
 namespace TlkLocalisationTool.UI.Models;
 
-public class DlgEntryModel
+public class DlgEntryModel : ModelBase
 {
+    private bool _isExpanded;
+    private bool _isSelected;
+
+    public string DisplayText => GetDisplayText();
+
     public int StrRef { get; set; }
 
     public string Text { get; set; }
@@ -17,11 +22,29 @@ public class DlgEntryModel
 
     public DlgEntryModel[] Entries { get; set; }
 
-    public bool IsChild { get; set; }
+    public bool IsLink { get; set; }
 
     public bool IsPlayerReply { get; set; }
 
-    public string DisplayText => GetDisplayText();
+    public bool IsExpanded
+    {
+        get => _isExpanded;
+        set
+        {
+            _isExpanded = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set
+        {
+            _isSelected = value;
+            OnPropertyChanged();
+        }
+    }
 
     private string GetDisplayText()
     {
@@ -41,7 +64,7 @@ public class DlgEntryModel
         }
 
         var displayText = $"[{speaker}] - ({StrRef}) {Text}";
-        if (IsChild)
+        if (IsLink)
         {
             displayText = Strings.DlgViewer_LinkTag + displayText;
         }

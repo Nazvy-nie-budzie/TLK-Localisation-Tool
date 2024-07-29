@@ -102,7 +102,7 @@ public class ContextSelectorViewModel : ViewModelBase
 
     private FileViewerParameters GetFileViewerParameters()
     {
-        var parameters = new FileViewerParameters { FileName = SelectedFileName.Value, TlkEntriesDictionary = _tlkEntriesDictionary };
+        var parameters = new FileViewerParameters { InitialStrRef = _strRef, FileName = SelectedFileName.Value, TlkEntriesDictionary = _tlkEntriesDictionary };
         return parameters;
     }
 }

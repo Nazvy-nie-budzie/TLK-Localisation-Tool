@@ -4,6 +4,7 @@
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                 xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+                xmlns:behaviors="clr-namespace:TlkLocalisationTool.UI.Behaviors"
                 xmlns:views="clr-namespace:TlkLocalisationTool.UI.Views"
                 mc:Ignorable="d"
                 Title="{Binding Title}"
@@ -20,12 +21,21 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TreeView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" ItemsSource="{Binding Entries}" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling">
+        <TreeView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" ItemsSource="{Binding Entries}" ScrollViewer.CanContentScroll="False" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling">
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem" BasedOn="{StaticResource TreeViewItemStyle}">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded}"/>
+                    <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                </Style>
+            </TreeView.ItemContainerStyle>
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Entries}">
                     <TextBlock Text="{Binding DisplayText}"/>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
+            <b:Interaction.Behaviors>
+                <behaviors:TreeViewScrollToSelectionBehavior/>
+            </b:Interaction.Behaviors>
             <b:Interaction.Triggers>
                 <b:EventTrigger EventName="SelectedItemChanged">
                     <b:InvokeCommandAction Command="{Binding ChangeSelectedEntryCommand}" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeView}}, Path=SelectedItem}"/>

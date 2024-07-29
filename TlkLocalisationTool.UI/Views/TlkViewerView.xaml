@@ -58,7 +58,7 @@
                         </GridView>
                     </ListView.View>
                     <b:Interaction.Behaviors>
-                        <behaviors:ScrollToSelectionBehavior/>
+                        <behaviors:ListViewScrollToSelectionBehavior/>
                     </b:Interaction.Behaviors>
                 </ListView>
                 <Button Grid.Row="3" Grid.Column="0" Content="Edit" Command="{Binding EditCommand}"/>
