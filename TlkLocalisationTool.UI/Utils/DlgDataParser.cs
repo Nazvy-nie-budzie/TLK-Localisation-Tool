@@ -79,8 +79,8 @@ internal static class DlgDataParser
     {
         var interlocutorEntryIndex = GetDwordFromEntryLinkFields(entryLinkFields);
         var linkedInterlocutorEntry = interlocutorEntries[interlocutorEntryIndex];
-        var isChild = GetBoolFromEntryLinkFields(entryLinkFields);
-        if (isChild)
+        var isLink = GetBoolFromEntryLinkFields(entryLinkFields);
+        if (isLink)
         {
             var subEntry = new DlgEntryModel
             {
@@ -89,7 +89,8 @@ internal static class DlgDataParser
                 Comment = GetStringFromFieldWithLabel(entryLinkFields, DlgFileConstants.LinkCommentFieldLabel),
                 Listener = linkedInterlocutorEntry.Listener,
                 Speaker = linkedInterlocutorEntry.Speaker,
-                IsChild = true,
+                Entries = [],
+                IsLink = true,
                 IsPlayerReply = linkedInterlocutorEntry.IsPlayerReply,
             };
 

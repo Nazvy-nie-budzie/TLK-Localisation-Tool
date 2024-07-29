@@ -3,7 +3,8 @@
                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                xmlns:controls="clr-namespace:TlkLocalisationTool.UI.Controls"
+                xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+                xmlns:behaviors="clr-namespace:TlkLocalisationTool.UI.Behaviors"
                 xmlns:views="clr-namespace:TlkLocalisationTool.UI.Views"
                 mc:Ignorable="d"
                 Title="{Binding Title}"
@@ -20,7 +21,11 @@
         <Label Grid.Row="0" Content="Original"/>
         <TextBox Grid.Row="1" Text="{Binding OriginalValue, Mode=OneWay}" IsReadOnly="True" HorizontalScrollBarVisibility="Auto"/>
         <Label Grid.Row="2" Content="Localised"/>
-        <controls:SpellCheckTextBox Grid.Row="3" Text="{Binding LocalisedValue}" HorizontalScrollBarVisibility="Auto" Language="{Binding Language}" SpellCheckDictionaries="{Binding SpellCheckFileUris}"/>
+        <TextBox Grid.Row="3" Text="{Binding LocalisedValue}" AcceptsReturn="True" HorizontalScrollBarVisibility="Auto" Language="{Binding Language}" SpellCheck.IsEnabled="True">
+            <b:Interaction.Behaviors>
+                <behaviors:CustomSpellCheckDictionariesBehavior DictionaryUris="{Binding SpellCheckFileUris}"/>
+            </b:Interaction.Behaviors>
+        </TextBox>
         <Button Grid.Row="4" Content="Save" Command="{Binding SaveCommand}"/>
     </Grid>
 </views:ViewBase>

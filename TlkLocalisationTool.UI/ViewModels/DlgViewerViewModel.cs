@@ -49,12 +49,43 @@ public class DlgViewerViewModel : ViewModelBase
 
         var filePath = Path.Combine(_appSettings.ExtractedGameFilesPath, _parameters.FileName);
         var gffData = await _gffReader.ReadData(filePath);
-        var startingEntries = DlgDataParser.Parse(gffData.TopLevelStruct, _parameters.TlkEntriesDictionary);
-        foreach (var startingEntry in startingEntries)
+        var topLevelEntries = DlgDataParser.Parse(gffData.TopLevelStruct, _parameters.TlkEntriesDictionary);
+
+        foreach (var topLevelEntry in topLevelEntries)
         {
-            Entries.Add(startingEntry);
+            Entries.Add(topLevelEntry);
+            if (SelectedEntry == null)
+            {
+                TrySelectEntryOrItsChild(topLevelEntry);
+            }
         }
     }
 
     private void ChangeSelectedEntry(object newSelectedEntry) => SelectedEntry = (DlgEntryModel)newSelectedEntry;
+
+    private bool TrySelectEntryOrItsChild(DlgEntryModel dlgEntry)
+    {
+        if (!dlgEntry.IsLink && dlgEntry.StrRef == _parameters.InitialStrRef)
+        {
+            dlgEntry.IsSelected = true;
+            return true;
+        }
+
+        if (dlgEntry.Entries.Length == 0)
+        {
+            return false;
+        }
+
+        foreach (var childEntry in dlgEntry.Entries)
+        {
+            var isEntrySelected = TrySelectEntryOrItsChild(childEntry);
+            if (isEntrySelected)
+            {
+                dlgEntry.IsExpanded = true;
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
