@@ -47,6 +47,7 @@ public class DlgViewerViewModel : ViewModelBase
     {
         Title = string.Format(Strings.DlgViewer_Title, _parameters.FileName);
 
+        IsLoading = true;
         var filePath = Path.Combine(_appSettings.ExtractedGameFilesPath, _parameters.FileName);
         var gffData = await _gffReader.ReadData(filePath);
         var topLevelEntries = DlgDataParser.Parse(gffData.TopLevelStruct, _parameters.TlkEntriesDictionary);
@@ -59,6 +60,8 @@ public class DlgViewerViewModel : ViewModelBase
                 TrySelectEntryOrItsChild(topLevelEntry);
             }
         }
+
+        IsLoading = false;
     }
 
     private void ChangeSelectedEntry(object newSelectedEntry) => SelectedEntry = (DlgEntryModel)newSelectedEntry;

@@ -147,7 +147,7 @@ public class SettingsEditorViewModel : ViewModelBase
             return _openFileDialog.FileName;
         }
 
-        MessageBox.Show(Strings.SettingsEditor_SelectedFileIsNotValidTlkMessage, Strings.ErrorMessage_Title);
+        MessageBox.Show(Strings.SettingsEditor_SelectedFileIsNotValidTlkMessage, Strings.ErrorMessage_Title, MessageBoxButton.OK, MessageBoxImage.Error);
         return currentFilePath;
     }
 
@@ -167,7 +167,7 @@ public class SettingsEditorViewModel : ViewModelBase
     {
         if (!_appSettings.LanguageCode.IsValidLanguageCode())
         {
-            MessageBox.Show(Strings.SettingsEditor_InvalidLanguageCodeWasClearedMessage, Strings.ErrorMessage_Title);
+            MessageBox.Show(Strings.SettingsEditor_InvalidLanguageCodeWasClearedMessage, Strings.ErrorMessage_Title, MessageBoxButton.OK, MessageBoxImage.Error);
             _appSettings.LanguageCode = string.Empty;
         }
 
@@ -179,12 +179,11 @@ public class SettingsEditorViewModel : ViewModelBase
         var isSelectedEncodingValid = DataConstants.AvailableEncodingNames.Contains(_appSettings.EncodingName);
         if (!isSelectedEncodingValid)
         {
+            _appSettings.EncodingName = DataConstants.AvailableEncodingNames[0];
             if (!string.IsNullOrEmpty(_appSettings.EncodingName))
             {
-                MessageBox.Show(Strings.SettingsEditor_InvalidEncodingNameWasReplacedMessage, Strings.ErrorMessage_Title);
+                MessageBox.Show(Strings.SettingsEditor_InvalidEncodingNameWasReplacedMessage, Strings.ErrorMessage_Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            _appSettings.EncodingName = DataConstants.AvailableEncodingNames[0];
         }
 
         SelectedEncodingName = _appSettings.EncodingName;
@@ -194,16 +193,19 @@ public class SettingsEditorViewModel : ViewModelBase
     {
         if (!LanguageCode.IsValidLanguageCode())
         {
-            MessageBox.Show(Strings.SettingsEditor_InvalidLanguageCodeMessage, Strings.ErrorMessage_Title);
+            MessageBox.Show(Strings.SettingsEditor_InvalidLanguageCodeMessage, Strings.ErrorMessage_Title, MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
 
+        IsLoading = true;
         _appSettings.LocalisedTlkFilePath = LocalisedTlkFilePath;
         _appSettings.OriginalTlkFilePath = OriginalTlkFilePath;
         _appSettings.ExtractedGameFilesPath = ExtractedGameFilesPath;
         _appSettings.LanguageCode = LanguageCode;
         _appSettings.EncodingName = SelectedEncodingName;
         await _jsonWriter.Write(_appSettings, DataConstants.AppSettingsFileName);
+        IsLoading = false;
+
         Close();
     }
 }

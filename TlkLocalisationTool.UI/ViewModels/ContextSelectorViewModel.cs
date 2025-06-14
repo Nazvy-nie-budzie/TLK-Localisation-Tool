@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,9 +17,7 @@ public class ContextSelectorViewModel : ViewModelBase
 {
     private readonly AppSettings _appSettings;
 
-    private int _strRef; 
-    private Dictionary<int, string> _tlkEntriesDictionary;
-    private bool _areAllFilesExist = true;
+    private ContextSelectorParameters _parameters;
 
     private Command _showContextCommand;
 
@@ -28,35 +26,36 @@ public class ContextSelectorViewModel : ViewModelBase
         _appSettings = appSettings;
     }
 
-    public List<FileNameModel> FileNames { get; } = [];
+    public ObservableCollection<FileNameModel> FileNames { get; } = [];
 
     public FileNameModel SelectedFileName { get; set; }
 
     public Command ShowContextCommand => _showContextCommand ??= new Command(_ => ShowContext(), _ => SelectedFileName?.IsContextAvailable == true);
 
-    public void SetParameters(ContextSelectorParameters parameters)
+    public void SetParameters(ContextSelectorParameters parameters) => _parameters = parameters;
+
+    public override Task Init()
     {
-        _strRef = parameters.StrRef;
-        _tlkEntriesDictionary = parameters.TlkEntriesDictionary;
-        foreach (var fileName in parameters.FileNames)
+        Title = string.Format(Strings.ContextSelector_Title, _parameters.StrRef);
+
+        IsLoading = true;
+        var areAllFilesExist = true;
+        foreach (var fileName in _parameters.FileNames)
         {
             var filePath = Path.Combine(_appSettings.ExtractedGameFilesPath, fileName);
             var isFileExist = File.Exists(filePath);
-            _areAllFilesExist &= isFileExist;
+            areAllFilesExist &= isFileExist;
             var fileExtension = Path.GetExtension(fileName);
             var isContextAvailableForFileExtension = fileExtension == SharedFileConstants.TdaFileExtension || SharedFileConstants.GffFileExtensions.Contains(fileExtension);
             var fileNameModel = new FileNameModel { Value = fileName, IsContextAvailable = isFileExist && isContextAvailableForFileExtension };
             FileNames.Add(fileNameModel);
         }
-    }
 
-    public override Task Init()
-    {
-        Title = string.Format(Strings.ContextSelector_Title, _strRef);
+        IsLoading = false;
 
-        if (!_areAllFilesExist)
+        if (!areAllFilesExist)
         {
-            MessageBox.Show(Strings.ContextSelectror_SomeFilesDontExistMessage, Strings.ErrorMessage_Title);
+            MessageBox.Show(Strings.ContextSelectror_SomeFilesDontExistMessage, Strings.ErrorMessage_Title, MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         return Task.CompletedTask;
@@ -102,7 +101,7 @@ public class ContextSelectorViewModel : ViewModelBase
 
     private FileViewerParameters GetFileViewerParameters()
     {
-        var parameters = new FileViewerParameters { InitialStrRef = _strRef, FileName = SelectedFileName.Value, TlkEntriesDictionary = _tlkEntriesDictionary };
+        var parameters = new FileViewerParameters { InitialStrRef = _parameters.StrRef, FileName = SelectedFileName.Value, TlkEntriesDictionary = _parameters.TlkEntriesDictionary };
         return parameters;
     }
 }

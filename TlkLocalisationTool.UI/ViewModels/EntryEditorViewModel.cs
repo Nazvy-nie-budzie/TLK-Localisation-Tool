@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Markup;
@@ -16,7 +16,7 @@ public class EntryEditorViewModel : ViewModelBase
 
     private Command _saveCommand;
 
-    public List<Uri> SpellCheckFileUris { get; } = [];
+    public ObservableCollection<Uri> SpellCheckFileUris { get; } = [];
 
     public bool AreChangesSaved { get; private set; }
 
@@ -40,11 +40,14 @@ public class EntryEditorViewModel : ViewModelBase
     {
         Title = string.Format(Strings.EntryEditor_Title, _strRef);
 
+        IsLoading = true;
         var lexFilePaths = Directory.GetFiles(Directory.GetCurrentDirectory(), DataConstants.LexFileSearchPattern);
         foreach (var lexFilePath in lexFilePaths)
         {
             SpellCheckFileUris.Add(new Uri(lexFilePath));
         }
+
+        IsLoading = false;
 
         return Task.CompletedTask;
     }

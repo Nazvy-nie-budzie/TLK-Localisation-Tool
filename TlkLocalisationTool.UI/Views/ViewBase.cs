@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using Microsoft.Xaml.Behaviors;
+using System.Windows;
 using System.Windows.Controls;
+using TlkLocalisationTool.UI.Behaviors;
 using TlkLocalisationTool.UI.ViewModels;
 
 namespace TlkLocalisationTool.UI.Views;
@@ -10,6 +12,7 @@ public abstract class ViewBase : Page
 
     public ViewBase()
     {
+        Interaction.GetBehaviors(this).Add(new PageLoadingBehavior());
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
     }
