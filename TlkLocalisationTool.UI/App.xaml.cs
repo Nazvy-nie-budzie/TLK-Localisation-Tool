@@ -59,7 +59,7 @@ public partial class App : Application
 
     private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
-        MessageBox.Show(e.Exception.Message, Strings.ErrorMessage_Title);
+        MessageBox.Show(e.Exception.Message, Strings.ErrorMessage_Title, MessageBoxButton.OK, MessageBoxImage.Error);
         e.Handled = true;
 
         if (Windows.Count == 0)

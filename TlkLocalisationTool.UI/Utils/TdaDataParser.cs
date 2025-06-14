@@ -3,35 +3,39 @@ using System.Collections.Generic;
 using System.Linq;
 using TlkLocalisationTool.Shared.Constants;
 using TlkLocalisationTool.Shared.Entities;
-using TlkLocalisationTool.UI.Models;
-using TlkLocalisationTool.UI.Resources;
 
 namespace TlkLocalisationTool.UI.Utils;
 
 internal static class TdaDataParser
 {
-    public static TdaColumnModel[] Parse(TdaData data, Dictionary<int, string> tlkEntriesDictionary)
+    public static TableDataSet Parse(TdaData data, Dictionary<int, string> tlkEntriesDictionary)
     {
-        var columnCount = data.ColumnNames.Length;
-        var rowCount = data.RowNames.Length;
-        var columns = new TdaColumnModel[columnCount + 1];
-        columns[0] = new TdaColumnModel { Name = Strings.TdaViewer_RowNamesColumnName, Values = data.RowNames };
-        for (var columnIndex = 0; columnIndex < columnCount; columnIndex++)
+        var originalColumnCount = data.ColumnNames.Length;
+        var tableDataSet = new TableDataSet { ColumnNames = new string[originalColumnCount + 1], Rows = new TableRow[data.RowNames.Length] };
+        tableDataSet.ColumnNames[0] = string.Empty;
+        var strRefColumnStatuses = new bool[originalColumnCount];
+        for (var i = 0; i < originalColumnCount; i++)
         {
-            var columnName = data.ColumnNames[columnIndex];
-            var isStrRefColumn = SharedFileConstants.TdaStrRefColumnNameParts.Any(x => columnName.Contains(x, StringComparison.OrdinalIgnoreCase));
-            var columnValues = new string[rowCount];
-            for (var rowIndex = 0; rowIndex < rowCount; rowIndex++)
-            {
-                var entryIndex = rowIndex * columnCount + columnIndex;
-                var entry = data.Entries[entryIndex];
-                columnValues[rowIndex] = isStrRefColumn ? GetStrRefEntry(entry, tlkEntriesDictionary) : entry;
-            }
-
-            columns[columnIndex + 1] = new TdaColumnModel { Name = columnName, Values = columnValues };
+            strRefColumnStatuses[i] = SharedFileConstants.TdaStrRefColumnNameParts.Any(x => data.ColumnNames[i].Contains(x, StringComparison.OrdinalIgnoreCase));
+            tableDataSet.ColumnNames[i + 1] = data.ColumnNames[i];
         }
 
-        return columns;
+        var entryIndex = 0;
+        for (var rowIndex = 0; rowIndex < data.RowNames.Length; rowIndex++)
+        {
+            var tableRow = new TableRow { Entries = new string[originalColumnCount + 1] };
+            tableRow.Entries[0] = data.RowNames[rowIndex];
+            for (var columnIndex = 0; columnIndex < originalColumnCount; columnIndex++)
+            {
+                var entry = data.Entries[entryIndex];
+                tableRow.Entries[columnIndex + 1] = strRefColumnStatuses[columnIndex] ? GetStrRefEntry(entry, tlkEntriesDictionary) : entry;
+                entryIndex++;
+            }
+
+            tableDataSet.Rows[rowIndex] = tableRow;
+        }
+
+        return tableDataSet;
     }
 
     private static string GetStrRefEntry(string entry, Dictionary<int, string> tlkEntriesDictionary)
@@ -39,8 +43,8 @@ internal static class TdaDataParser
         var isEntryValidStrRef = int.TryParse(entry, out int strRef);
         if (isEntryValidStrRef)
         {
-            tlkEntriesDictionary.TryGetValue(strRef, out string value);
-            return $"{entry} ({value})";
+            tlkEntriesDictionary.TryGetValue(strRef, out string tlkEntry);
+            return $"{entry} ({tlkEntry})";
         }
 
         return entry;

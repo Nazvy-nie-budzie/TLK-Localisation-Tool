@@ -31,9 +31,11 @@ public class GffViewerViewModel : ViewModelBase
     {
         Title = string.Format(Strings.GffViewer_Title, _parameters.FileName);
 
+        IsLoading = true;
         var filePath = Path.Combine(_appSettings.ExtractedGameFilesPath, _parameters.FileName);
         var gffData = await _gffReader.ReadData(filePath);
         var topLevelEntity = GffDataParser.Parse(gffData.TopLevelStruct, _parameters.TlkEntriesDictionary);
         Entities.Add(topLevelEntity);
+        IsLoading = false;
     }
 }

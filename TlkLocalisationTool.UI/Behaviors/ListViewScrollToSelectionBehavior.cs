@@ -19,7 +19,8 @@ internal class ListViewScrollToSelectionBehavior : Behavior<ListView>
     {
         if (AssociatedObject.SelectedItem != null)
         {
-            AssociatedObject.ScrollIntoView(AssociatedObject.SelectedItem);
+            // if selected item is changed inside CollectionView filter ScrollIntoView will work only inside BeginInvoke
+            AssociatedObject.Dispatcher.BeginInvoke(() => AssociatedObject.ScrollIntoView(AssociatedObject.SelectedItem));
         }
         else
         {

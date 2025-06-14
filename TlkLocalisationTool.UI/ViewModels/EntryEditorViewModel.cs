@@ -40,11 +40,14 @@ public class EntryEditorViewModel : ViewModelBase
     {
         Title = string.Format(Strings.EntryEditor_Title, _strRef);
 
+        IsLoading = true;
         var lexFilePaths = Directory.GetFiles(Directory.GetCurrentDirectory(), DataConstants.LexFileSearchPattern);
         foreach (var lexFilePath in lexFilePaths)
         {
             SpellCheckFileUris.Add(new Uri(lexFilePath));
         }
+
+        IsLoading = false;
 
         return Task.CompletedTask;
     }

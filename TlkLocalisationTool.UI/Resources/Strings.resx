@@ -121,7 +121,7 @@
     <value>Context Selector - StrRef {0}</value>
   </data>
   <data name="ContextSelectror_SomeFilesDontExistMessage" xml:space="preserve">
-    <value>Some files from the list don't exist. Please, regenerate lookup file.</value>
+    <value>Some files from the list don't exist. Please, regenerate the lookup file.</value>
   </data>
   <data name="DefaultTitle" xml:space="preserve">
     <value>Loading...</value>
@@ -163,19 +163,16 @@
     <value>Encoding was invalid. Default encoding was selected instead.</value>
   </data>
   <data name="SettingsEditor_InvalidLanguageCodeMessage" xml:space="preserve">
-    <value>Language code is invalid. Either clear it, or set it to valid one.</value>
+    <value>Language code is invalid. Either clear it, or set it to a valid one.</value>
   </data>
   <data name="SettingsEditor_InvalidLanguageCodeWasClearedMessage" xml:space="preserve">
     <value>Language code was invalid, so it was cleared.</value>
   </data>
   <data name="SettingsEditor_SelectedFileIsNotValidTlkMessage" xml:space="preserve">
-    <value>Selected file is not a valid TLK file</value>
+    <value>Selected file is not a valid TLK file.</value>
   </data>
   <data name="SettingsEditor_Title" xml:space="preserve">
     <value>Settings</value>
-  </data>
-  <data name="TdaViewer_RowNamesColumnName" xml:space="preserve">
-    <value>Row names</value>
   </data>
   <data name="TdaViewer_Title" xml:space="preserve">
     <value>2DA Viewer - {0}</value>
@@ -186,12 +183,18 @@
   <data name="TlkViewer_EntriesWereExportedMessage" xml:space="preserve">
     <value>Entries were exported.</value>
   </data>
+  <data name="TlkViewer_EntriesWereImportedMessage" xml:space="preserve">
+    <value>Entries were imported.</value>
+  </data>
   <data name="TlkViewer_ExtractedGameFilesPathIsInvalidMessage" xml:space="preserve">
     <value>Extracted game files path is invalid. Lookup file can't be generated.</value>
   </data>
   <data name="TlkViewer_ExtractedGameFilesPathWasChangedMessage" xml:space="preserve">
     <value>Extracted game files path was changed. Do you want to (re)generate lookup file now?
 NOTE: it might take couple of minutes.</value>
+  </data>
+  <data name="TlkViewer_ImportedEntriesCountIsNotEqualToOriginalEntriesCount" xml:space="preserve">
+    <value>Imported entries count isn't equal to the original entries count. Import will be aborted.</value>
   </data>
   <data name="TlkViewer_LookupFileGenerationConfirmationMessage" xml:space="preserve">
     <value>Are you sure that you want to (re)generate lookup file?
@@ -209,5 +212,11 @@ NOTE: it might take couple of minutes.</value>
   </data>
   <data name="TlkViewer_TlkFilePathsAreInvalidMessage" xml:space="preserve">
     <value>You have to set up paths to valid .tlk files.</value>
+  </data>
+  <data name="TlkViewer_UnsavedChangesWillBeLostMessage" xml:space="preserve">
+    <value>All your unsaved changes will be lost. Are you sure that you want to continie?</value>
+  </data>
+  <data name="WarningMessage_Title" xml:space="preserve">
+    <value>Warning</value>
   </data>
 </root>

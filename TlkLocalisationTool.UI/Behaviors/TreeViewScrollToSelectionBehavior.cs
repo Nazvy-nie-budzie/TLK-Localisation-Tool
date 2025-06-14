@@ -7,7 +7,7 @@ namespace TlkLocalisationTool.UI.Behaviors;
 
 internal class TreeViewScrollToSelectionBehavior : Behavior<TreeView>
 {
-    private const double HorizontalScrollOffset = 100;
+    private const double HorizontalScrollOffset = 500;
     private const double VerticalScrollOffset = 100; 
 
     protected override void OnAttached()
@@ -18,8 +18,8 @@ internal class TreeViewScrollToSelectionBehavior : Behavior<TreeView>
 
     private void OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
     {
-        BringSelectedItemIntoView();
         AssociatedObject.SelectedItemChanged -= OnSelectedItemChanged;
+        BringSelectedItemIntoView();
     }
 
     private void BringSelectedItemIntoView()

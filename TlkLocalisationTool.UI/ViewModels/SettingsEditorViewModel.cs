@@ -105,23 +105,6 @@ public class SettingsEditorViewModel : ViewModelBase
     {
         Title = Strings.SettingsEditor_Title;
 
-        _openFileDialog = new OpenFileDialog
-        {
-            AddToRecent = false,
-            CheckFileExists = true,
-            CheckPathExists = true,
-            DereferenceLinks = true,
-            ValidateNames = true,
-            Filter = DataConstants.TlkFilesFilter,
-        };
-
-        _openFolderDialog = new OpenFolderDialog
-        {
-            AddToRecent = false,
-            DereferenceLinks = true,
-            ValidateNames = true,
-        };
-
         LocalisedTlkFilePath = _appSettings.LocalisedTlkFilePath;
         OriginalTlkFilePath = _appSettings.OriginalTlkFilePath;
         ExtractedGameFilesPath = _appSettings.ExtractedGameFilesPath;
@@ -134,6 +117,16 @@ public class SettingsEditorViewModel : ViewModelBase
 
     private async Task<string> SelectTlkFilePath(string currentFilePath)
     {
+        _openFileDialog ??= new OpenFileDialog
+        {
+            AddToRecent = false,
+            CheckFileExists = true,
+            CheckPathExists = true,
+            DereferenceLinks = true,
+            ValidateNames = true,
+            Filter = DataConstants.TlkFilesFilter,
+        };
+
         _openFileDialog.InitialDirectory = string.IsNullOrWhiteSpace(currentFilePath) ? Environment.CurrentDirectory : Path.GetDirectoryName(currentFilePath);        
         var isFileSelected = _openFileDialog.ShowDialog();
         if (isFileSelected != true)
@@ -147,12 +140,19 @@ public class SettingsEditorViewModel : ViewModelBase
             return _openFileDialog.FileName;
         }
 
-        MessageBox.Show(Strings.SettingsEditor_SelectedFileIsNotValidTlkMessage, Strings.ErrorMessage_Title);
+        MessageBox.Show(Strings.SettingsEditor_SelectedFileIsNotValidTlkMessage, Strings.ErrorMessage_Title, MessageBoxButton.OK, MessageBoxImage.Error);
         return currentFilePath;
     }
 
     private string SelectFolderPath(string currentPath)
     {
+        _openFolderDialog ??= new OpenFolderDialog
+        {
+            AddToRecent = false,
+            DereferenceLinks = true,
+            ValidateNames = true,
+        };
+
         _openFolderDialog.InitialDirectory = string.IsNullOrWhiteSpace(currentPath) ? Environment.CurrentDirectory : currentPath;
         var isFolderSelected = _openFolderDialog.ShowDialog();
         if (isFolderSelected != true)
@@ -167,7 +167,7 @@ public class SettingsEditorViewModel : ViewModelBase
     {
         if (!_appSettings.LanguageCode.IsValidLanguageCode())
         {
-            MessageBox.Show(Strings.SettingsEditor_InvalidLanguageCodeWasClearedMessage, Strings.ErrorMessage_Title);
+            MessageBox.Show(Strings.SettingsEditor_InvalidLanguageCodeWasClearedMessage, Strings.ErrorMessage_Title, MessageBoxButton.OK, MessageBoxImage.Error);
             _appSettings.LanguageCode = string.Empty;
         }
 
@@ -179,12 +179,11 @@ public class SettingsEditorViewModel : ViewModelBase
         var isSelectedEncodingValid = DataConstants.AvailableEncodingNames.Contains(_appSettings.EncodingName);
         if (!isSelectedEncodingValid)
         {
+            _appSettings.EncodingName = DataConstants.AvailableEncodingNames[0];
             if (!string.IsNullOrEmpty(_appSettings.EncodingName))
             {
-                MessageBox.Show(Strings.SettingsEditor_InvalidEncodingNameWasReplacedMessage, Strings.ErrorMessage_Title);
+                MessageBox.Show(Strings.SettingsEditor_InvalidEncodingNameWasReplacedMessage, Strings.ErrorMessage_Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            _appSettings.EncodingName = DataConstants.AvailableEncodingNames[0];
         }
 
         SelectedEncodingName = _appSettings.EncodingName;
@@ -194,16 +193,19 @@ public class SettingsEditorViewModel : ViewModelBase
     {
         if (!LanguageCode.IsValidLanguageCode())
         {
-            MessageBox.Show(Strings.SettingsEditor_InvalidLanguageCodeMessage, Strings.ErrorMessage_Title);
+            MessageBox.Show(Strings.SettingsEditor_InvalidLanguageCodeMessage, Strings.ErrorMessage_Title, MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
 
+        IsLoading = true;
         _appSettings.LocalisedTlkFilePath = LocalisedTlkFilePath;
         _appSettings.OriginalTlkFilePath = OriginalTlkFilePath;
         _appSettings.ExtractedGameFilesPath = ExtractedGameFilesPath;
         _appSettings.LanguageCode = LanguageCode;
         _appSettings.EncodingName = SelectedEncodingName;
         await _jsonWriter.Write(_appSettings, DataConstants.AppSettingsFileName);
+        IsLoading = false;
+
         Close();
     }
 }

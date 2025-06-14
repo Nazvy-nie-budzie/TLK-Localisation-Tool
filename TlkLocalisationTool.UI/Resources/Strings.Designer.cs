@@ -70,7 +70,7 @@ namespace TlkLocalisationTool.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Some files from the list don&apos;t exist. Please, regenerate lookup file..
+        ///   Looks up a localized string similar to Some files from the list don&apos;t exist. Please, regenerate the lookup file..
         /// </summary>
         internal static string ContextSelectror_SomeFilesDontExistMessage {
             get {
@@ -196,7 +196,7 @@ namespace TlkLocalisationTool.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Language code is invalid. Either clear it, or set it to valid one..
+        ///   Looks up a localized string similar to Language code is invalid. Either clear it, or set it to a valid one..
         /// </summary>
         internal static string SettingsEditor_InvalidLanguageCodeMessage {
             get {
@@ -214,7 +214,7 @@ namespace TlkLocalisationTool.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Selected file is not a valid TLK file.
+        ///   Looks up a localized string similar to Selected file is not a valid TLK file..
         /// </summary>
         internal static string SettingsEditor_SelectedFileIsNotValidTlkMessage {
             get {
@@ -228,15 +228,6 @@ namespace TlkLocalisationTool.UI.Resources {
         internal static string SettingsEditor_Title {
             get {
                 return ResourceManager.GetString("SettingsEditor_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Row names.
-        /// </summary>
-        internal static string TdaViewer_RowNamesColumnName {
-            get {
-                return ResourceManager.GetString("TdaViewer_RowNamesColumnName", resourceCulture);
             }
         }
         
@@ -268,6 +259,15 @@ namespace TlkLocalisationTool.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Entries were imported..
+        /// </summary>
+        internal static string TlkViewer_EntriesWereImportedMessage {
+            get {
+                return ResourceManager.GetString("TlkViewer_EntriesWereImportedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Extracted game files path is invalid. Lookup file can&apos;t be generated..
         /// </summary>
         internal static string TlkViewer_ExtractedGameFilesPathIsInvalidMessage {
@@ -283,6 +283,15 @@ namespace TlkLocalisationTool.UI.Resources {
         internal static string TlkViewer_ExtractedGameFilesPathWasChangedMessage {
             get {
                 return ResourceManager.GetString("TlkViewer_ExtractedGameFilesPathWasChangedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imported entries count isn&apos;t equal to the original entries count. Import will be aborted..
+        /// </summary>
+        internal static string TlkViewer_ImportedEntriesCountIsNotEqualToOriginalEntriesCount {
+            get {
+                return ResourceManager.GetString("TlkViewer_ImportedEntriesCountIsNotEqualToOriginalEntriesCount", resourceCulture);
             }
         }
         
@@ -330,6 +339,24 @@ namespace TlkLocalisationTool.UI.Resources {
         internal static string TlkViewer_TlkFilePathsAreInvalidMessage {
             get {
                 return ResourceManager.GetString("TlkViewer_TlkFilePathsAreInvalidMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All your unsaved changes will be lost. Are you sure that you want to continie?.
+        /// </summary>
+        internal static string TlkViewer_UnsavedChangesWillBeLostMessage {
+            get {
+                return ResourceManager.GetString("TlkViewer_UnsavedChangesWillBeLostMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning.
+        /// </summary>
+        internal static string WarningMessage_Title {
+            get {
+                return ResourceManager.GetString("WarningMessage_Title", resourceCulture);
             }
         }
     }

@@ -1,19 +1,20 @@
 ﻿using Microsoft.Xaml.Behaviors;
+using System;
 using System.Collections.Generic;
 using System.Windows;
-using System;
 using System.Windows.Controls;
 
 namespace TlkLocalisationTool.UI.Behaviors;
 
 internal class CustomSpellCheckDictionariesBehavior : Behavior<TextBox>
 {
-    public static readonly DependencyProperty DictionaryUrisProperty =
-        DependencyProperty.Register("DictionaryUris", typeof(List<Uri>), typeof(CustomSpellCheckDictionariesBehavior));
+    public static readonly DependencyProperty DictionaryUrisProperty = DependencyProperty.Register(nameof(DictionaryUris), typeof(IEnumerable<Uri>), typeof(CustomSpellCheckDictionariesBehavior));
 
-    public static List<Uri> GetDictionaryUris(CustomSpellCheckDictionariesBehavior target) => (List<Uri>)target.GetValue(DictionaryUrisProperty);
-
-    public static void SetDictionaryUris(CustomSpellCheckDictionariesBehavior target, List<Uri> value) => target.SetValue(DictionaryUrisProperty, value);
+    public IEnumerable<Uri> DictionaryUris
+    {
+        get => (IEnumerable<Uri>)GetValue(DictionaryUrisProperty);
+        set => SetValue(DictionaryUrisProperty, value);
+    }
 
     protected override void OnAttached()
     {
@@ -24,14 +25,16 @@ internal class CustomSpellCheckDictionariesBehavior : Behavior<TextBox>
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        var attachedDictionaryUris = GetDictionaryUris(this);
-        attachedDictionaryUris.ForEach(x => AssociatedObject.SpellCheck.CustomDictionaries.Add(x));
+        AssociatedObject.Loaded -= OnLoaded;
+        foreach (var dictionaryUri in DictionaryUris)
+        {
+            AssociatedObject.SpellCheck.CustomDictionaries.Add(dictionaryUri);
+        }
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
         AssociatedObject.SpellCheck.CustomDictionaries.Clear();
-        AssociatedObject.Loaded -= OnLoaded;
         AssociatedObject.Unloaded -= OnUnloaded;
     }
 }

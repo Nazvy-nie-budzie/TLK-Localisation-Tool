@@ -14,7 +14,7 @@ Tool that helps with SW KOTOR localisation.
 
 ## Spellcheck
 There are two ways to use spellchecker in TLK Localisation Tool:
-1. If there is a Windows language pack (or language interface pack with spellchecker) for your language, make sure is's installed on your machine, open the program, go to 'File' -> 'Settings', and set your language code there (list of codes for Windows language and language interface packs can be found [here](https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/available-language-packs-for-windows?view=windows-11#language-packs)). After that spellcheck on 'Entry Editor' form should start working.
+1. If there is a Windows language pack (or language interface pack with spellchecker) for your language, make sure it's installed on your machine, open the program, go to 'File' -> 'Settings', and set your language code there (list of codes for Windows language and language interface packs can be found [here](https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/available-language-packs-for-windows?view=windows-11#language-packs)). After that spellcheck on 'Entry Editor' form should start working.
 2. If there is no Windows language pack (or language interface pack with spellchecker) for your language, or you want spellchecker not to highlight some words, you can create custom dictionary. Information about custom dictionary format can be found [here](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.spellcheck.customdictionaries?view=windowsdesktop-8.0#remarks). When dictionary is created, move it to the program's root folder, open the program, and perform the actions described above.
 
 Additional notes regarding spellcheck and .lex files:
