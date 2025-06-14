@@ -105,23 +105,6 @@ public class SettingsEditorViewModel : ViewModelBase
     {
         Title = Strings.SettingsEditor_Title;
 
-        _openFileDialog = new OpenFileDialog
-        {
-            AddToRecent = false,
-            CheckFileExists = true,
-            CheckPathExists = true,
-            DereferenceLinks = true,
-            ValidateNames = true,
-            Filter = DataConstants.TlkFilesFilter,
-        };
-
-        _openFolderDialog = new OpenFolderDialog
-        {
-            AddToRecent = false,
-            DereferenceLinks = true,
-            ValidateNames = true,
-        };
-
         LocalisedTlkFilePath = _appSettings.LocalisedTlkFilePath;
         OriginalTlkFilePath = _appSettings.OriginalTlkFilePath;
         ExtractedGameFilesPath = _appSettings.ExtractedGameFilesPath;
@@ -134,6 +117,16 @@ public class SettingsEditorViewModel : ViewModelBase
 
     private async Task<string> SelectTlkFilePath(string currentFilePath)
     {
+        _openFileDialog ??= new OpenFileDialog
+        {
+            AddToRecent = false,
+            CheckFileExists = true,
+            CheckPathExists = true,
+            DereferenceLinks = true,
+            ValidateNames = true,
+            Filter = DataConstants.TlkFilesFilter,
+        };
+
         _openFileDialog.InitialDirectory = string.IsNullOrWhiteSpace(currentFilePath) ? Environment.CurrentDirectory : Path.GetDirectoryName(currentFilePath);        
         var isFileSelected = _openFileDialog.ShowDialog();
         if (isFileSelected != true)
@@ -153,6 +146,13 @@ public class SettingsEditorViewModel : ViewModelBase
 
     private string SelectFolderPath(string currentPath)
     {
+        _openFolderDialog ??= new OpenFolderDialog
+        {
+            AddToRecent = false,
+            DereferenceLinks = true,
+            ValidateNames = true,
+        };
+
         _openFolderDialog.InitialDirectory = string.IsNullOrWhiteSpace(currentPath) ? Environment.CurrentDirectory : currentPath;
         var isFolderSelected = _openFolderDialog.ShowDialog();
         if (isFolderSelected != true)

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Markup;
@@ -16,7 +16,7 @@ public class EntryEditorViewModel : ViewModelBase
 
     private Command _saveCommand;
 
-    public ObservableCollection<Uri> SpellCheckFileUris { get; } = [];
+    public List<Uri> SpellCheckFileUris { get; } = [];
 
     public bool AreChangesSaved { get; private set; }
 
