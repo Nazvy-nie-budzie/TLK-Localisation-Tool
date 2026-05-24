@@ -39,7 +39,7 @@ public partial class App : Application
 
         var appSettings = ServiceProviderContainer.GetRequiredService<AppSettings>();
         var jsonWriter = ServiceProviderContainer.GetRequiredService<IJsonWriter>();
-        jsonWriter.WriteSync(appSettings, DataConstants.AppSettingsFileName);
+        jsonWriter.WriteSync(appSettings, DataConstants.AppSettingsFileName, true);
     }
 
     private static ServiceProvider CreateServiceProvider(ServiceCollection serviceCollection, AppSettings appSettings)
