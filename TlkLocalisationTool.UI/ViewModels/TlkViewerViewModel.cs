@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,16 +27,14 @@ public class TlkViewerViewModel : ViewModelBase
     private readonly IJsonReader _jsonReader;
     private readonly IJsonWriter _jsonWriter;
 
-    private readonly ICollectionView _entriesCollectionView;
-
     private string[] _originalEntries;
     private TlkEntryModel _previousSelectedEntry;
     private OpenFileDialog _openFileDialog;
     private SaveFileDialog _saveFileDialog;
     private bool _isFilterByOriginalEntries;
     private TlkEntryModel _selectedEntry;
-    private string _filter;
 
+    private Command _filterCommand;
     private Command _editCommand;
     private Command _selectContextCommand;
     private Command _settingsCommand;
@@ -55,21 +52,11 @@ public class TlkViewerViewModel : ViewModelBase
         _lookupService = lookupService;
         _jsonReader = jsonReader;
         _jsonWriter = jsonWriter;
-
-        _entriesCollectionView = CollectionViewSource.GetDefaultView(Entries);
     }
 
     public ObservableCollection<TlkEntryModel> Entries { get; } = [];
 
-    public string Filter
-    {
-        get => _filter;
-        set
-        {
-            _filter = value;
-            FilterEntries();
-        }
-    }
+    public string Filter { get; set; }
 
     public bool IsFilterByOriginalEntries
     {
@@ -86,6 +73,8 @@ public class TlkViewerViewModel : ViewModelBase
         get => _selectedEntry;
         set => UpdateSelectedEntry(value);
     }
+
+    public Command FilterCommand => _filterCommand ??= new Command(_ => FilterEntries());
 
     public Command EditCommand => _editCommand ??= new Command(_ => ShowEntryEditor(), _ => SelectedEntry != null);
 
@@ -141,7 +130,15 @@ public class TlkViewerViewModel : ViewModelBase
             SelectedEntry = null;
         }
 
-        _entriesCollectionView.Refresh();
+        var collectionView = CollectionViewSource.GetDefaultView(Entries);
+        if (string.IsNullOrWhiteSpace(Filter))
+        {
+            collectionView.Filter = null;
+            SelectedEntry = _previousSelectedEntry;
+            return;
+        }
+
+        collectionView.Filter = IsEntryFilteredIn;
     }
 
     private void ShowEntryEditor()
@@ -308,7 +305,7 @@ public class TlkViewerViewModel : ViewModelBase
         }
 
         IsLoading = true;
-        await _jsonWriter.Write(entries, _saveFileDialog.FileName, true);
+        await _jsonWriter.Write(entries, _saveFileDialog.FileName);
         IsLoading = false;
 
         _saveFileDialog.FileName = null;
@@ -373,7 +370,6 @@ public class TlkViewerViewModel : ViewModelBase
             ? await _jsonReader.Read<Dictionary<int, string[]>>(DataConstants.LookupDataFileName)
             : new Dictionary<int, string[]>();
 
-        _entriesCollectionView.Filter = null;
         Entries.Clear();
         var entries = await _tlkReader.ReadEntries(_appSettings.LocalisedTlkFilePath);
         for (var i = 0; i < entries.Length; i++)
@@ -384,7 +380,6 @@ public class TlkViewerViewModel : ViewModelBase
         }
 
         SelectInitialEntry();
-        _entriesCollectionView.Filter = IsEntryFilteredIn;
     }
 
     private async Task LoadOriginalEntries() => _originalEntries = await _tlkReader.ReadEntries(_appSettings.OriginalTlkFilePath);
@@ -426,14 +421,14 @@ public class TlkViewerViewModel : ViewModelBase
     private bool IsEntryFilteredIn(object item)
     {
         var entry = item as TlkEntryModel;
-        var isEntryFilteredIn = string.IsNullOrEmpty(Filter) || entry.Value.Contains(Filter, StringComparison.OrdinalIgnoreCase)
+        var isEntryFiltered = entry.Value.Contains(Filter, StringComparison.OrdinalIgnoreCase)
             || (IsFilterByOriginalEntries && _originalEntries[entry.StrRef].Contains(Filter, StringComparison.OrdinalIgnoreCase));
 
-        if (isEntryFilteredIn && entry == _previousSelectedEntry)
+        if (isEntryFiltered && entry == _previousSelectedEntry)
         {
             SelectedEntry = entry;
         }
 
-        return isEntryFilteredIn;
+        return isEntryFiltered;
     }
 }

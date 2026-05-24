@@ -203,7 +203,7 @@ public class SettingsEditorViewModel : ViewModelBase
         _appSettings.ExtractedGameFilesPath = ExtractedGameFilesPath;
         _appSettings.LanguageCode = LanguageCode;
         _appSettings.EncodingName = SelectedEncodingName;
-        await _jsonWriter.Write(_appSettings, DataConstants.AppSettingsFileName, true);
+        await _jsonWriter.Write(_appSettings, DataConstants.AppSettingsFileName);
         IsLoading = false;
 
         Close();
