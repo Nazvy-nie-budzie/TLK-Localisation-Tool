@@ -36,13 +36,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}">
-                    <b:Interaction.Triggers>
-                        <b:EventTrigger EventName="TextChanged">
-                            <b:InvokeCommandAction Command="{Binding FilterCommand}"/>
-                        </b:EventTrigger>
-                    </b:Interaction.Triggers>
-                </TextBox>
+                <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged, Delay=10}"/>
                 <CheckBox Grid.Row="0" Grid.Column="1" Content="Include original entries in search" IsChecked="{Binding IsFilterByOriginalEntries}"/>
             </Grid>
             <ListView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{Binding Entries}" SelectedItem="{Binding SelectedEntry}" VirtualizingPanel.IsVirtualizing="True"
