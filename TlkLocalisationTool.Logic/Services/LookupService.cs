@@ -57,7 +57,7 @@ internal class LookupService : ILookupService
         }
 
         var sortedLookupDictionary = lookupDictionary.OrderBy(x => x.Key).ToDictionary();
-        await _jsonWriter.Write(sortedLookupDictionary, filePath, false);
+        await _jsonWriter.Write(sortedLookupDictionary, filePath);
     }
 
     private async Task AddStrRefsToLookupDictionary(string filePath, Func<string, Task<int[]>> strRefsReader, Dictionary<int, List<string>> lookupDictionary)
